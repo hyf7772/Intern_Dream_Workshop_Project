@@ -546,6 +546,12 @@ button {
   transform: translateY(-1px);
 }
 
+.breadcrumb-home img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
 .task-breadcrumb {
   margin: 0 0 3px;
   color: #544637;
@@ -661,10 +667,10 @@ button {
   font-weight: 800;
 }
 
-.player-stars span {
-  color: #ffc12b;
-  font-size: 26px;
-  text-shadow: 0 1px 0 #b47705;
+.player-stars img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
 }
 
 .stats-strip {
@@ -698,28 +704,11 @@ button {
 }
 
 .stat-icon {
-  display: grid;
-  width: 46px;
-  aspect-ratio: 1;
+  width: 54px;
+  height: 54px;
   flex: none;
-  border-radius: 14px;
-  place-items: center;
-  color: var(--accent-dark);
-  background: var(--accent-soft);
-  box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), 0.18);
-  font-size: 22px;
-  font-weight: 900;
-}
-
-.stat-icon--star {
-  color: #e59a08;
-  background: #fff3c9;
-}
-
-.stat-icon--calendar {
-  color: #b15b27;
-  background: #fff0dc;
-  font-size: 15px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 4px rgba(104, 72, 23, 0.14));
 }
 
 .stat-block > div:not(.stat-progress) {
@@ -854,9 +843,22 @@ button {
   font-weight: 900;
 }
 
+.sidebar-icon img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: saturate(0.82) drop-shadow(0 2px 3px rgba(74, 49, 17, 0.15));
+  transition: filter 160ms ease, transform 160ms ease;
+}
+
 .is-active .sidebar-icon {
   color: var(--accent-dark);
   background: #fff;
+}
+
+.is-active .sidebar-icon img {
+  filter: saturate(1.12) drop-shadow(0 3px 5px rgba(74, 49, 17, 0.24));
+  transform: scale(1.05);
 }
 
 .task-sidebar__nav strong {
@@ -1025,6 +1027,13 @@ button {
   font-weight: 900;
 }
 
+.task-row__icon img {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 4px rgba(79, 57, 23, 0.18));
+}
+
 .task-row__copy {
   min-width: 0;
 }
@@ -1110,10 +1119,10 @@ button {
   white-space: nowrap;
 }
 
-.task-row__reward > span {
-  color: #ffc52c;
-  font-size: 24px;
-  text-shadow: 0 1px 0 #a56d04;
+.task-row__reward > img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
 }
 
 .task-row__reward strong {
@@ -1335,17 +1344,43 @@ button {
   background: #d7382f;
 }
 
-.task-bottom-nav button > span {
-  display: grid;
-  width: 34px;
-  aspect-ratio: 1;
-  place-items: center;
-  font-size: 27px;
-  font-weight: 900;
+.task-bottom-nav button > img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  filter: grayscale(0.45) saturate(0.68) opacity(0.82);
+  transition: filter 160ms ease, transform 160ms ease;
+}
+
+.task-bottom-nav button.is-active > img {
+  filter: saturate(1.18) drop-shadow(0 3px 5px rgba(185, 48, 32, 0.28));
+  transform: translateY(-1px) scale(1.06);
 }
 
 .task-bottom-nav button strong {
   font-size: 18px;
+}
+
+.home-bottom-nav {
+  position: absolute;
+  z-index: 8;
+  bottom: 1.2%;
+  left: 50%;
+  width: 92%;
+  max-width: none;
+  min-height: 8.6%;
+  margin: 0;
+  border-radius: clamp(20px, 2.5vw, 42px);
+  transform: translateX(-50%);
+}
+
+.page-loading {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  color: #7b653f;
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .task-toast {
@@ -1605,9 +1640,9 @@ button {
     flex-direction: column;
   }
 
-  .task-bottom-nav button > span {
-    width: 24px;
-    font-size: 19px;
+  .task-bottom-nav button > img {
+    width: 28px;
+    height: 28px;
   }
 
   .task-bottom-nav button strong {
