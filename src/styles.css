@@ -688,6 +688,7 @@ button {
 .stat-block {
   position: relative;
   display: flex;
+  min-height: 76px;
   align-items: center;
   gap: 14px;
   padding: 10px 28px;
@@ -703,12 +704,32 @@ button {
   background: #e4d6bb;
 }
 
-.stat-icon {
+.stat-icon-frame {
+  display: grid;
   width: 54px;
   height: 54px;
   flex: none;
+  place-items: center;
+}
+
+.stat-icon {
+  display: block;
+  width: 52px;
+  height: 52px;
   object-fit: contain;
   filter: drop-shadow(0 3px 4px rgba(104, 72, 23, 0.14));
+}
+
+.stat-icon--completion {
+  transform: translate(-8%, 7%);
+}
+
+.stat-icon--stars {
+  transform: translateY(-4%);
+}
+
+.stat-icon--calendar {
+  transform: translate(5%, 9%);
 }
 
 .stat-block > div:not(.stat-progress) {
@@ -792,7 +813,7 @@ button {
 .task-sidebar__nav button {
   position: relative;
   display: grid;
-  grid-template-columns: 42px 1fr 28px;
+  grid-template-columns: 50px 1fr 28px;
   min-height: 72px;
   align-items: center;
   gap: 8px;
@@ -833,8 +854,9 @@ button {
 
 .sidebar-icon {
   display: grid;
-  width: 40px;
-  aspect-ratio: 1;
+  width: 50px;
+  height: 50px;
+  flex: none;
   border-radius: 12px;
   place-items: center;
   color: var(--accent-dark);
@@ -844,11 +866,24 @@ button {
 }
 
 .sidebar-icon img {
+  display: block;
   width: 48px;
   height: 48px;
   object-fit: contain;
   filter: saturate(0.82) drop-shadow(0 2px 3px rgba(74, 49, 17, 0.15));
   transition: filter 160ms ease, transform 160ms ease;
+}
+
+.sidebar-icon--newcomer img {
+  transform: translate(-10%, 10%);
+}
+
+.sidebar-icon--mainline img {
+  transform: translateY(-4%);
+}
+
+.sidebar-icon--professional img {
+  transform: translate(7%, 6%);
 }
 
 .is-active .sidebar-icon {
@@ -858,11 +893,23 @@ button {
 
 .is-active .sidebar-icon img {
   filter: saturate(1.12) drop-shadow(0 3px 5px rgba(74, 49, 17, 0.24));
-  transform: scale(1.05);
+}
+
+.is-active .sidebar-icon--newcomer img {
+  transform: translate(-10%, 10%) scale(1.04);
+}
+
+.is-active .sidebar-icon--mainline img {
+  transform: translateY(-4%) scale(1.04);
+}
+
+.is-active .sidebar-icon--professional img {
+  transform: translate(7%, 6%) scale(1.04);
 }
 
 .task-sidebar__nav strong {
   font-size: 17px;
+  white-space: nowrap;
 }
 
 .task-sidebar__nav small {
@@ -1014,8 +1061,8 @@ button {
 
 .task-row__icon {
   display: grid;
-  width: 50px;
-  aspect-ratio: 1;
+  width: 58px;
+  height: 58px;
   margin: auto;
   border: 2px solid rgba(var(--accent-rgb), 0.2);
   border-radius: 15px;
@@ -1028,10 +1075,12 @@ button {
 }
 
 .task-row__icon img {
-  width: 58px;
-  height: 58px;
+  display: block;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
   filter: drop-shadow(0 3px 4px rgba(79, 57, 23, 0.18));
+  transform: translateY(6%);
 }
 
 .task-row__copy {
@@ -1408,13 +1457,13 @@ button {
   }
 
   .task-layout {
-    grid-template-columns: 215px minmax(0, 1fr);
+    grid-template-columns: 225px minmax(0, 1fr);
     padding-right: 26px;
     padding-left: 26px;
   }
 
   .task-row {
-    grid-template-columns: 56px minmax(210px, 1fr) 128px 96px 110px 128px;
+    grid-template-columns: 60px minmax(210px, 1fr) 128px 96px 110px 128px;
     gap: 9px;
     padding-right: 10px;
     padding-left: 10px;
@@ -1453,7 +1502,7 @@ button {
 
   .task-row {
     min-height: 105px;
-    grid-template-columns: 50px minmax(190px, 1fr) 120px 110px;
+    grid-template-columns: 58px minmax(190px, 1fr) 120px 110px;
   }
 
   .task-row__ability {
@@ -1561,7 +1610,13 @@ button {
 
   .sidebar-icon {
     width: 28px;
+    height: 28px;
     font-size: 12px;
+  }
+
+  .sidebar-icon img {
+    width: 26px;
+    height: 26px;
   }
 
   .task-sidebar__nav strong {
@@ -1584,8 +1639,18 @@ button {
   .task-row {
     display: grid;
     min-height: 0;
-    grid-template-columns: 48px 1fr;
+    grid-template-columns: 52px 1fr;
     padding: 12px;
+  }
+
+  .task-row__icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .task-row__icon img {
+    width: 48px;
+    height: 48px;
   }
 
   .task-row__status,

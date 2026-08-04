@@ -17,7 +17,7 @@ export function TaskSidebar({ activePage, pages, onChange }: TaskSidebarProps) {
           const page = pages[pageId]
           return (
             <button key={page.id} type="button" className={activePage === page.id ? 'is-active' : ''} aria-current={activePage === page.id ? 'page' : undefined} onClick={() => onChange(page.id)}>
-              <span className="sidebar-icon"><img src={categoryIcons[page.id]} alt="" aria-hidden="true" /></span>
+              <span className={`sidebar-icon sidebar-icon--${page.id}`}><img src={categoryIcons[page.id]} alt="" aria-hidden="true" /></span>
               <strong>{page.title}</strong>
               <small>{page.stats.total}</small>
             </button>
