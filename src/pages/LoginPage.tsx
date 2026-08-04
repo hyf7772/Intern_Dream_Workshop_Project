@@ -71,7 +71,6 @@ export function LoginPage({ onSelectRole }: LoginPageProps) {
               disabled={pendingRole !== null}
               onClick={() => selectRole(card.role)}
             >
-              {card.role === 'admin' && <span className="identity-card__badge">即将开放</span>}
               <span className="identity-card__icon"><img src={card.icon} alt="" aria-hidden="true" /></span>
               <strong>{card.title}</strong>
               <small>{card.description}</small>

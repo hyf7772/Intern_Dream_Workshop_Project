@@ -200,6 +200,11 @@ button {
   object-fit: contain;
 }
 
+/* 仅校正管理员公文包素材自身的视觉重心，不影响实习生头像或图标外框。 */
+.identity-card--admin .identity-card__icon img {
+  transform: translate(10%, 10%);
+}
+
 .identity-card strong {
   margin-top: 18px;
   font-size: 25px;

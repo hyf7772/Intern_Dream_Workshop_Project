@@ -1,4 +1,5 @@
-import { mockModules } from '../mocks/homeData'
+import { adminModules, internModules } from '../mocks/homeData'
+import type { UserRole } from '../types/auth'
 import { mockTaskPages, mockUser } from '../mocks/taskData'
 import type { ModuleItem, TaskPageConfig, TaskPageId, UserSummary } from '../types/task'
 
@@ -15,7 +16,7 @@ export const taskService = {
   async getUserSummary(): Promise<UserSummary> {
     return clone(mockUser)
   },
-  async getHomeModules(): Promise<ModuleItem[]> {
-    return clone(mockModules)
+  async getHomeModules(role: UserRole): Promise<ModuleItem[]> {
+    return clone(role === 'admin' ? adminModules : internModules)
   },
 }

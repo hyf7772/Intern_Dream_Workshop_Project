@@ -25,8 +25,6 @@ function App() {
   const navigateToTaskPage = (page: TaskPageId) => { window.location.hash = `/tasks/${page}`; setTaskPage(page) }
   const navigateHome = () => { window.history.pushState(null, '', window.location.pathname); setTaskPage(null) }
   const selectRole = async (role: UserRole): Promise<'entered' | 'unavailable'> => {
-    if (role === 'admin') return 'unavailable'
-
     const user = await authService.signInAsRole(role)
     authService.saveSession(user)
     setCurrentUser(user)
@@ -37,7 +35,7 @@ function App() {
 
   return taskPage
     ? <TaskCenterPage pageId={taskPage} onPageChange={navigateToTaskPage} onHome={navigateHome} />
-    : <HomePage onOpenTasks={() => navigateToTaskPage('newcomer')} />
+    : <HomePage role={currentUser.role} onOpenTasks={() => navigateToTaskPage('newcomer')} />
 }
 
 export default App
