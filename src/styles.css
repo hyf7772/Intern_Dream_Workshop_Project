@@ -23,6 +23,332 @@ button {
   font: inherit;
 }
 
+.login-page {
+  position: relative;
+  display: grid;
+  min-height: 100dvh;
+  overflow: hidden;
+  isolation: isolate;
+  place-items: center;
+  padding: 36px 24px;
+  background: #0b477b;
+}
+
+.login-page__background {
+  position: absolute;
+  z-index: -2;
+  inset: -24px;
+  background:
+    linear-gradient(180deg, rgba(7, 75, 133, 0.16), rgba(4, 38, 75, 0.55)),
+    url('/dream-factory-home.png') center / cover no-repeat;
+  filter: saturate(0.88) blur(2px);
+  transform: scale(1.035);
+}
+
+.login-page::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: '';
+  background:
+    radial-gradient(circle at 50% 35%, rgba(228, 248, 255, 0.08), transparent 35%),
+    linear-gradient(90deg, rgba(4, 35, 71, 0.28), transparent 35% 65%, rgba(4, 35, 71, 0.28));
+}
+
+.login-panel {
+  width: min(920px, 100%);
+  padding: clamp(30px, 4vw, 52px);
+  border: 2px solid rgba(238, 202, 125, 0.86);
+  border-radius: 34px;
+  background: linear-gradient(145deg, rgba(255, 254, 247, 0.96), rgba(239, 249, 252, 0.94));
+  box-shadow: 0 28px 80px rgba(3, 30, 64, 0.42), inset 0 0 0 1px rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(18px);
+}
+
+.login-brand {
+  text-align: center;
+}
+
+.login-brand__emblem {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto 10px;
+  border: 2px solid #e5bc64;
+  border-radius: 50%;
+  place-items: center;
+  color: #f4b720;
+  background: #fffdf5;
+  box-shadow: 0 8px 20px rgba(120, 79, 13, 0.16);
+  font-size: 27px;
+}
+
+.login-brand p {
+  margin: 0;
+  color: #947038;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+}
+
+.login-brand h1 {
+  margin: 8px 0 5px;
+  color: #234f78;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.18;
+}
+
+.login-brand > span:last-child {
+  color: #6f7e88;
+  font-size: 15px;
+}
+
+.identity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.identity-card {
+  position: relative;
+  display: flex;
+  min-height: 300px;
+  padding: 28px;
+  overflow: hidden;
+  border: 2px solid rgba(70, 149, 79, 0.25);
+  border-radius: 26px;
+  align-items: center;
+  flex-direction: column;
+  color: #31553a;
+  background: linear-gradient(155deg, #ffffff 20%, #edf9eb);
+  box-shadow: 0 12px 28px rgba(35, 75, 67, 0.11);
+  cursor: pointer;
+  transition: 180ms ease;
+}
+
+.identity-card::before {
+  position: absolute;
+  inset: auto -55px -90px auto;
+  width: 190px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  content: '';
+  background: rgba(71, 173, 71, 0.1);
+}
+
+.identity-card--admin {
+  border-color: rgba(105, 82, 183, 0.26);
+  color: #554284;
+  background: linear-gradient(155deg, #ffffff 20%, #f2effb);
+}
+
+.identity-card--admin::before {
+  background: rgba(106, 80, 183, 0.1);
+}
+
+.identity-card:hover,
+.identity-card:focus-visible {
+  border-color: #55a84e;
+  outline: none;
+  box-shadow: 0 18px 38px rgba(44, 105, 72, 0.18), 0 0 0 4px rgba(83, 171, 76, 0.1);
+  transform: translateY(-5px);
+}
+
+.identity-card--admin:hover,
+.identity-card--admin:focus-visible {
+  border-color: #8068c4;
+  box-shadow: 0 18px 38px rgba(76, 57, 139, 0.18), 0 0 0 4px rgba(123, 99, 194, 0.1);
+}
+
+.identity-card:disabled {
+  cursor: wait;
+}
+
+.identity-card__badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 5px 10px;
+  border: 1px solid rgba(115, 84, 197, 0.24);
+  border-radius: 999px;
+  color: #654d9f;
+  background: #f2edff;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.identity-card__icon {
+  display: grid;
+  width: 100px;
+  height: 100px;
+  border: 2px solid rgba(90, 167, 83, 0.2);
+  border-radius: 28px;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 10px 24px rgba(53, 91, 68, 0.12);
+}
+
+.identity-card--admin .identity-card__icon {
+  border-color: rgba(115, 84, 197, 0.2);
+}
+
+.identity-card__icon img {
+  display: block;
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+}
+
+.identity-card strong {
+  margin-top: 18px;
+  font-size: 25px;
+}
+
+.identity-card small {
+  max-width: 270px;
+  min-height: 44px;
+  margin-top: 8px;
+  color: #718078;
+  font-size: 13px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.identity-card__action {
+  display: inline-flex;
+  min-width: 150px;
+  margin-top: 18px;
+  padding: 11px 18px;
+  border-radius: 14px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #fff;
+  background: linear-gradient(180deg, #55b34c, #278837);
+  box-shadow: 0 6px 15px rgba(38, 134, 57, 0.22);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.identity-card--admin .identity-card__action {
+  background: linear-gradient(180deg, #8168c8, #57409b);
+  box-shadow: 0 6px 15px rgba(81, 58, 154, 0.22);
+}
+
+.identity-card__action b {
+  font-size: 22px;
+  line-height: 0.7;
+}
+
+.login-panel__hint {
+  margin: 24px 0 0;
+  color: #89949a;
+  font-size: 12px;
+  text-align: center;
+}
+
+.login-toast {
+  position: fixed;
+  z-index: 5;
+  bottom: 38px;
+  left: 50%;
+  padding: 13px 22px;
+  border: 1px solid rgba(226, 191, 113, 0.8);
+  border-radius: 999px;
+  color: #5c4425;
+  background: rgba(255, 252, 238, 0.97);
+  box-shadow: 0 12px 30px rgba(4, 35, 71, 0.3);
+  font-size: 14px;
+  font-weight: 800;
+  transform: translateX(-50%);
+  animation: toast-in 220ms ease both;
+}
+
+@media (max-width: 650px) {
+  .login-page {
+    align-items: start;
+    padding: 18px 14px;
+    overflow: auto;
+  }
+
+  .login-panel {
+    margin: auto;
+    padding: 24px 16px;
+    border-radius: 25px;
+  }
+
+  .login-brand__emblem {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+  }
+
+  .login-brand h1 {
+    font-size: 24px;
+  }
+
+  .identity-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 24px;
+  }
+
+  .identity-card {
+    display: grid;
+    min-height: 0;
+    grid-template-columns: 72px 1fr;
+    padding: 18px;
+    align-items: center;
+    text-align: left;
+  }
+
+  .identity-card__icon {
+    width: 64px;
+    height: 64px;
+    grid-row: 1 / 4;
+    border-radius: 20px;
+  }
+
+  .identity-card__icon img {
+    width: 58px;
+    height: 58px;
+  }
+
+  .identity-card strong,
+  .identity-card small,
+  .identity-card__action {
+    margin-left: 10px;
+  }
+
+  .identity-card strong {
+    margin-top: 0;
+    font-size: 20px;
+  }
+
+  .identity-card small {
+    min-height: 0;
+    margin-top: 3px;
+    text-align: left;
+  }
+
+  .identity-card__action {
+    min-width: 0;
+    width: fit-content;
+    margin-top: 9px;
+    padding: 8px 14px;
+  }
+
+  .identity-card__badge {
+    top: 12px;
+    right: 12px;
+  }
+
+  .login-panel__hint {
+    margin-top: 18px;
+  }
+}
+
 .app-shell {
   display: grid;
   width: 100%;
