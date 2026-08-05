@@ -7,6 +7,7 @@ import type { ModuleItem, NavigationId } from '../types/task'
 interface HomePageProps {
   role: UserRole
   onOpenTasks: () => void
+  onOpenActivities: () => void
 }
 
 const homeBackgrounds: Record<UserRole, string> = {
@@ -14,7 +15,7 @@ const homeBackgrounds: Record<UserRole, string> = {
   intern: '/home-intern.png',
 }
 
-export function HomePage({ role, onOpenTasks }: HomePageProps) {
+export function HomePage({ role, onOpenTasks, onOpenActivities }: HomePageProps) {
   const [modules, setModules] = useState<ModuleItem[]>([])
   const [activeModule, setActiveModule] = useState<ModuleItem | null>(null)
   const [notice, setNotice] = useState('')
@@ -33,11 +34,16 @@ export function HomePage({ role, onOpenTasks }: HomePageProps) {
     return () => window.clearTimeout(timeout)
   }, [notice])
 
-  const openModule = (module: ModuleItem) => module.id === 'tasks' && role === 'intern' ? onOpenTasks() : setActiveModule(module)
+  const openModule = (module: ModuleItem) => {
+    if (module.id === 'tasks' && role === 'intern') onOpenTasks()
+    else if (module.id === 'activities' && role === 'admin') onOpenActivities()
+    else setActiveModule(module)
+  }
 
   const handleNavigation = (id: NavigationId, label: string) => {
     if (id === 'home') setNotice('已在青春梦工场首页')
     else if (id === 'tasks' && role === 'intern') onOpenTasks()
+    else if (id === 'tasks' && role === 'admin') onOpenActivities()
     else setNotice(`${label}模块将在后续阶段接入`)
   }
 
