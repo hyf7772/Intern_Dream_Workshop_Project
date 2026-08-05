@@ -1,4 +1,5 @@
 import type { ActivityOverviewConfig } from '../types/activity'
+import { activityConfigIcons } from '../constants/assets'
 
 export const activityOverviews: Record<ActivityOverviewConfig['id'], ActivityOverviewConfig> = {
   general: {
@@ -6,10 +7,10 @@ export const activityOverviews: Record<ActivityOverviewConfig['id'], ActivityOve
     title: '通用活动总览',
     subtitle: '统一查看与管理实习生活动',
     stats: [
-      { label: '本周活动数量', value: 12, icon: '▣' },
-      { label: '进行中任务数量', value: 5, icon: '✓' },
-      { label: '已完成任务数量', value: 18, icon: '★' },
-      { label: '待复盘活动数量', value: 4, icon: '☷' },
+      { label: '本周活动数量', value: 12, icon: activityConfigIcons.stats.weekly },
+      { label: '进行中任务数量', value: 5, icon: activityConfigIcons.stats.inProgress },
+      { label: '已完成任务数量', value: 18, icon: activityConfigIcons.stats.completed },
+      { label: '待复盘活动数量', value: 4, icon: activityConfigIcons.stats.pendingReview },
     ],
     items: [
       { id: 'new-employee-class', name: '职场进阶 我有一招 新员工小课堂', type: '成长培训', publisher: '张悦', department: '人力资源部', date: '2026-08-05', time: '14:00 ~ 16:00', location: '总部培训室 A', enrollment: '36/50', stars: 30, status: '未发布', icon: '🎓' },
@@ -27,10 +28,10 @@ export const activityOverviews: Record<ActivityOverviewConfig['id'], ActivityOve
     title: '专业活动总览',
     subtitle: '按岗位查看与管理专业实践活动',
     stats: [
-      { label: '本周活动数量', value: 6, icon: '▣' },
-      { label: '进行中任务数量', value: 3, icon: '✓' },
-      { label: '已完成任务数量', value: 9, icon: '★' },
-      { label: '待复盘活动数量', value: 2, icon: '☷' },
+      { label: '本周活动数量', value: 6, icon: activityConfigIcons.stats.weekly },
+      { label: '进行中任务数量', value: 3, icon: activityConfigIcons.stats.inProgress },
+      { label: '已完成任务数量', value: 9, icon: activityConfigIcons.stats.completed },
+      { label: '待复盘活动数量', value: 2, icon: activityConfigIcons.stats.pendingReview },
     ],
     items: [
       { id: 'refer-client', name: '转介三个客户（厅堂岗位）', type: '客户服务', publisher: '赵琳', department: '零售金融部', date: '2026-08-05', time: '09:00 ~ 12:00', location: '营业厅 A 区', enrollment: '12/20', stars: 40, status: '未发布', icon: '👥' },

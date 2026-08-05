@@ -8,6 +8,19 @@ export const statIcons = {
   calendar: `${ICON_ROOT}/stat-calendar.png`,
 } as const
 
+export const activityConfigIcons = {
+  general: `${ICON_ROOT}/activity-overview-general.png`,
+  professional: `${ICON_ROOT}/activity-overview-professional.png`,
+  publish: `${ICON_ROOT}/activity-publish.png`,
+  review: `${ICON_ROOT}/activity-review.png`,
+  stats: {
+    weekly: `${ICON_ROOT}/stat-weekly-activities.png`,
+    inProgress: `${ICON_ROOT}/stat-in-progress-tasks.png`,
+    completed: `${ICON_ROOT}/stat-completed-tasks.png`,
+    pendingReview: `${ICON_ROOT}/stat-pending-review.png`,
+  },
+} as const
+
 export const categoryIcons: Record<TaskPageId, string> = {
   newcomer: `${ICON_ROOT}/category-newcomer.png`,
   mainline: `${ICON_ROOT}/category-mainline.png`,
@@ -23,4 +36,3 @@ export const navigationIcons: Record<NavigationId, string> = {
 }
 
 export const sharedActivityIcon = `${ICON_ROOT}/activity-shared.png`
-

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { activityConfigIcons, statIcons } from '../constants/assets'
 import { activityOverviews } from '../mocks/activityData'
 import type { ActivityOverviewId, ActivityStatus } from '../types/activity'
 
@@ -21,8 +22,6 @@ const statusClass: Record<ActivityStatus, string> = {
   进行中: 'is-active',
   已结束: 'is-ended',
 }
-
-const statIconNames = ['week', 'progress', 'completed', 'review'] as const
 
 export function ActivityOverviewPage({ pageId, onPageChange, onHome }: ActivityOverviewPageProps) {
   const config = activityOverviews[pageId]
@@ -65,10 +64,10 @@ export function ActivityOverviewPage({ pageId, onPageChange, onHome }: ActivityO
   return (
     <main className="activity-page">
       <header className="activity-header">
-        <button className="activity-brand" type="button" onClick={onHome} aria-label="返回梦工场首页"><span className="activity-brand__mark" aria-hidden="true" /></button>
+        <button className="activity-brand" type="button" onClick={onHome} aria-label="返回梦工场首页"><img className="activity-brand__icon" src={activityConfigIcons.general} alt="" aria-hidden="true" /></button>
         <div className="activity-heading">
           <p className="activity-crumb">梦工场 <span>›</span> 活动配置中心 <span>›</span> {config.title}</p>
-          <h1><span className="activity-title-icon activity-png-icon is-overview" aria-hidden="true" />{config.title}<i>✦</i></h1>
+          <h1>{config.title}<i>✦</i></h1>
           <p>{config.subtitle}</p>
         </div>
         <aside className="activity-user-card" aria-label="当前登录用户">
@@ -79,17 +78,17 @@ export function ActivityOverviewPage({ pageId, onPageChange, onHome }: ActivityO
       </header>
 
       <section className="activity-stats" aria-label="活动数据概览">
-        {config.stats.map((stat, index) => <div className="activity-stat" key={stat.label}><span className={`activity-stat__icon activity-png-icon is-${statIconNames[index]}`} aria-hidden="true" /><div><span>{stat.label}</span><strong>{stat.value}</strong></div></div>)}
+        {config.stats.map(stat => <div className="activity-stat" key={stat.label}><img className="activity-stat__icon" src={stat.icon} alt="" aria-hidden="true" /><div><span>{stat.label}</span><strong>{stat.value}</strong></div></div>)}
       </section>
 
       <section className="activity-workspace">
         <aside className="activity-sidebar">
           <h2>功能模块</h2>
           <nav aria-label="活动配置功能导航">
-            <button className={pageId === 'general' ? 'is-selected' : ''} type="button" onClick={() => onPageChange('general')}><span className="activity-nav-icon activity-png-icon is-general" aria-hidden="true" />通用活动总览<i>›</i></button>
-            <button className={pageId === 'professional' ? 'is-selected' : ''} type="button" onClick={() => onPageChange('professional')}><span className="activity-nav-icon activity-png-icon is-professional" aria-hidden="true" />专业活动总览<i>›</i></button>
-            <button type="button" onClick={() => setNotice('活动发布功能将在后续阶段接入')}><span className="activity-nav-icon activity-png-icon is-publish" aria-hidden="true" />活动发布<i>›</i></button>
-            <button type="button" onClick={() => setNotice('活动复盘功能将在后续阶段接入')}><span className="activity-nav-icon activity-png-icon is-review" aria-hidden="true" />活动复盘<i>›</i></button>
+            <button className={pageId === 'general' ? 'is-selected' : ''} type="button" onClick={() => onPageChange('general')}><img className="activity-nav-icon" src={activityConfigIcons.general} alt="" aria-hidden="true" />通用活动总览<i>›</i></button>
+            <button className={pageId === 'professional' ? 'is-selected' : ''} type="button" onClick={() => onPageChange('professional')}><img className="activity-nav-icon" src={activityConfigIcons.professional} alt="" aria-hidden="true" />专业活动总览<i>›</i></button>
+            <button type="button" onClick={() => setNotice('活动发布功能将在后续阶段接入')}><img className="activity-nav-icon" src={activityConfigIcons.publish} alt="" aria-hidden="true" />活动发布<i>›</i></button>
+            <button type="button" onClick={() => setNotice('活动复盘功能将在后续阶段接入')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />活动复盘<i>›</i></button>
           </nav>
           <div className="activity-sidebar__illustration"><img src="/assets/activity-operations.png" alt="活动运营看板插画" /><strong>{pageId === 'general' ? '活动运营看板' : '专业实践看板'}</strong><p>{pageId === 'general' ? '统一配置与跟踪活动全流程' : '支持按岗位配置与追踪实践活动'}</p></div>
         </aside>
@@ -115,7 +114,7 @@ export function ActivityOverviewPage({ pageId, onPageChange, onHome }: ActivityO
                     <td><time dateTime={item.date}>{item.date}<br />{item.time}</time></td>
                     <td>{item.location}</td>
                     <td>{item.enrollment}</td>
-                    <td><b className="activity-stars">☆</b> {item.stars}</td>
+                    <td><img className="activity-stars" src={statIcons.stars} alt="" aria-hidden="true" /> {item.stars}</td>
                     <td><span className={`activity-status ${statusClass[item.status]}`}>{item.status}</span></td>
                     <td><button type="button" className="activity-row-action" onClick={() => handleAction(item.name, item.status)}>{statusAction[item.status]}</button></td>
                   </tr>)}
