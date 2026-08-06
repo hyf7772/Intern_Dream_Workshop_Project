@@ -8,6 +8,7 @@ interface HomePageProps {
   role: UserRole
   onOpenTasks: () => void
   onOpenActivities: () => void
+  onOpenPoints: () => void
 }
 
 const homeBackgrounds: Record<UserRole, string> = {
@@ -15,7 +16,7 @@ const homeBackgrounds: Record<UserRole, string> = {
   intern: '/home-intern.png',
 }
 
-export function HomePage({ role, onOpenTasks, onOpenActivities }: HomePageProps) {
+export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints }: HomePageProps) {
   const [modules, setModules] = useState<ModuleItem[]>([])
   const [activeModule, setActiveModule] = useState<ModuleItem | null>(null)
   const [notice, setNotice] = useState('')
@@ -37,6 +38,7 @@ export function HomePage({ role, onOpenTasks, onOpenActivities }: HomePageProps)
   const openModule = (module: ModuleItem) => {
     if (module.id === 'tasks' && role === 'intern') onOpenTasks()
     else if (module.id === 'activities' && role === 'admin') onOpenActivities()
+    else if (module.id === 'ranking' && role === 'admin') onOpenPoints()
     else setActiveModule(module)
   }
 
@@ -44,6 +46,7 @@ export function HomePage({ role, onOpenTasks, onOpenActivities }: HomePageProps)
     if (id === 'home') setNotice('已在青春梦工场首页')
     else if (id === 'tasks' && role === 'intern') onOpenTasks()
     else if (id === 'tasks' && role === 'admin') onOpenActivities()
+    else if (id === 'points' && role === 'admin') onOpenPoints()
     else setNotice(`${label}模块将在后续阶段接入`)
   }
 

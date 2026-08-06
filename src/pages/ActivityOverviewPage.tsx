@@ -100,7 +100,7 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
             <select aria-label="按活动类型搜索" value={type} onChange={event => setType(event.target.value)}><option value="">按活动类型搜索</option>{types.map(item => <option key={item}>{item}</option>)}</select>
             <select aria-label="按所属部门搜索" value={department} onChange={event => setDepartment(event.target.value)}><option value="">按所属部门搜索</option>{departments.map(item => <option key={item}>{item}</option>)}</select>
             <label className="activity-date"><span>按时间搜索</span><input type="date" aria-label="按时间搜索" value={date} onChange={event => setDate(event.target.value)} /></label>
-            <label className="activity-query"><input value={query} onChange={event => setQuery(event.target.value)} placeholder="任意输入搜索活动名称/发布人/地点" aria-label="任意输入搜索" /><span aria-hidden="true">⌕</span></label>
+            <label className="activity-query"><input value={query} onChange={event => setQuery(event.target.value)} placeholder="任意输入搜索活动名称/地点" aria-label="任意输入搜索" /><span aria-hidden="true">⌕</span></label>
           </div>
 
           <div className="activity-list-heading"><h2>活动总览</h2><span>支持分页查询</span></div>
