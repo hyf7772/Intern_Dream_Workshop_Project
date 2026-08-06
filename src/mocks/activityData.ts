@@ -35,12 +35,12 @@ export const activityOverviews: Record<ActivityOverviewConfig['id'], ActivityOve
     ],
     items: [
       { id: 'refer-client', name: '转介三个客户（厅堂岗位）', type: '客户服务', publisher: '赵琳', department: '零售金融部', date: '2026-08-05', time: '09:00 ~ 12:00', location: '营业厅 A 区', enrollment: '12/20', stars: 40, status: '未发布', icon: '👥' },
-      { id: 'corporate-visit', name: '协助一场上企活动（市场岗位）', type: '市场拓展', publisher: '周琪', department: '市场拓展部', date: '2026-08-06', time: '14:00 ~ 17:00', location: '企业客户现场', enrollment: '8/12', stars: 50, status: '报名中', icon: '♙' },
-      { id: 'credit-report', name: '协助撰写一篇授信报告（对公岗位）', type: '对公业务', publisher: '何川', department: '公司金融部', date: '2026-08-07', time: '10:00 ~ 15:00', location: '对公业务部', enrollment: '15/20', stars: 60, status: '进行中', icon: '▤' },
-      { id: 'customer-service', name: '客户接待流程演练（零售岗位）', type: '客户服务', publisher: '赵琳', department: '零售金融部', date: '2026-08-08', time: '09:30 ~ 11:30', location: '培训室 B', enrollment: '18/25', stars: 40, status: '报名中', icon: '♟' },
-      { id: 'wealth-products', name: '理财产品讲解实战（财富岗位）', type: '产品营销', publisher: '李文', department: '财富管理部', date: '2026-08-10', time: '15:00 ~ 17:30', location: '营业厅 A 区', enrollment: '20/30', stars: 50, status: '进行中', icon: '▥' },
-      { id: 'morning-meeting', name: '协助整理晨会纪要（综合支持）', type: '运营支持', publisher: '赵琳', department: '综合管理部', date: '2026-08-11', time: '09:00 ~ 11:00', location: '会议室 3', enrollment: '10/15', stars: 30, status: '已结束', icon: '▰' },
-      { id: 'negotiation', name: '营销话术情景模拟（市场岗位）', type: '市场拓展', publisher: '周琪', department: '市场拓展部', date: '2026-08-12', time: '14:00 ~ 16:30', location: '培训室 B', enrollment: '14/20', stars: 40, status: '报名中', icon: '●' },
+      { id: 'corporate-visit', name: '协助一场上企活动（市场岗位）', type: '市场拓展', publisher: '周琪', department: '市场拓展部', date: '2026-08-06', time: '14:00 ~ 17:00', location: '企业客户现场', enrollment: '8/12', stars: 50, status: '报名中', icon: '🏠' },
+      { id: 'credit-report', name: '协助撰写一篇授信报告（对公岗位）', type: '对公业务', publisher: '何川', department: '公司金融部', date: '2026-08-07', time: '10:00 ~ 15:00', location: '对公业务部', enrollment: '15/20', stars: 60, status: '进行中', icon: '📄' },
+      { id: 'customer-service', name: '客户接待流程演练（零售岗位）', type: '客户服务', publisher: '赵琳', department: '零售金融部', date: '2026-08-08', time: '09:30 ~ 11:30', location: '培训室 B', enrollment: '18/25', stars: 40, status: '报名中', icon: '🤵' },
+      { id: 'wealth-products', name: '理财产品讲解实战（财富岗位）', type: '产品营销', publisher: '李文', department: '财富管理部', date: '2026-08-10', time: '15:00 ~ 17:30', location: '营业厅 A 区', enrollment: '20/30', stars: 50, status: '进行中', icon: '💴' },
+      { id: 'morning-meeting', name: '协助整理晨会纪要（综合支持）', type: '运营支持', publisher: '赵琳', department: '综合管理部', date: '2026-08-11', time: '09:00 ~ 11:00', location: '会议室 3', enrollment: '10/15', stars: 30, status: '已结束', icon: '📃' },
+      { id: 'negotiation', name: '营销话术情景模拟（市场岗位）', type: '市场拓展', publisher: '周琪', department: '市场拓展部', date: '2026-08-12', time: '14:00 ~ 16:30', location: '培训室 B', enrollment: '14/20', stars: 40, status: '报名中', icon: '🛍️' },
     ],
   },
 }

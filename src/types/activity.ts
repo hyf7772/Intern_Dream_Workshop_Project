@@ -1,4 +1,5 @@
 export type ActivityOverviewId = 'general' | 'professional'
+export type ActivityPageId = ActivityOverviewId | 'publish' | 'review'
 
 export type ActivityStatus = '未发布' | '报名中' | '进行中' | '已结束'
 
