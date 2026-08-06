@@ -3262,6 +3262,45 @@ img.activity-stars {
 .recipient-row b { color: #dc4b3d; font-size: 9px; font-weight: 900; white-space: nowrap; }
 .recipient-row b.is-issued { color: #3f9e50; }
 .recipient-empty { padding: 32px 0; color: #ae938a; font-size: 11px; text-align: center; }
+
+/* 星愿值页图像：在浅色管理台中使用原图色彩，避免 screen 混合使图像发白。 */
+.points-page .points-brand-image-slot img,
+.points-page .points-top-avatar-slot img,
+.points-page .points-side-icon img,
+.points-page .points-feature-image img,
+.points-page .ranking-medal img,
+.points-page .ranking-avatar-placeholder img,
+.points-page .table-avatar-placeholder img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  mix-blend-mode: normal;
+}
+
+/* 礼品、兑换与名单容器此前为空；这里按业务语义接入对应的现有图标资源。 */
+.points-page .gift-image-placeholder,
+.points-page .recipient-placeholder {
+  overflow: hidden;
+  border-style: solid;
+  background-color: #fff8f4;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.points-page .gift-image-placeholder {
+  background-image: url('/assets/icons/3be3a0fc-1a69-4539-bb48-d8a83d4c1320.png');
+}
+
+.points-page .redemption-table .gift-image-placeholder {
+  background-image: url('/assets/icons/b9771bde-48e8-45eb-b679-bf2e6eb3dd34.png');
+}
+
+.points-page .recipient-placeholder {
+  background-image: url('/assets/icons/0dfe422f-88c4-455b-839e-677070ec4c8a.png');
+}
 .full-width { width: calc(100% - 30px); margin: 0 15px; }
 .redemption-note { margin: 13px 15px 15px; padding: 10px; border: 1px solid #f1d7cc; border-radius: 9px; background: #fff8f4; }
 .redemption-note strong { color: var(--points-red); font-size: 11px; }

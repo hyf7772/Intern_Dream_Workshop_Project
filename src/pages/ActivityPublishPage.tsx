@@ -130,7 +130,6 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
         <aside className="activity-user-card" aria-label="当前登录用户">
           <div className="activity-user-card__avatar" aria-hidden="true">👩🏻‍💼</div>
           <div><strong>张悦</strong><small>活动配置中心</small></div>
-          <button type="button" aria-label="设置" onClick={() => setNotice('设置功能将在后续阶段接入')}></button>
         </aside>
       </header>
 

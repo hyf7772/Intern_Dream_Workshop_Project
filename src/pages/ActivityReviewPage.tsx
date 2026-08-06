@@ -111,7 +111,7 @@ export function ActivityReviewPage({ onPageChange, onHome }: ActivityReviewPageP
             <select value={type} onChange={event => setType(event.target.value)} aria-label="按活动类型搜索"><option value="">按活动类型搜索</option>{types.map(item => <option key={item}>{item}</option>)}</select>
             <label className="review-date"><span>按时间搜索</span><input type="date" value={date} onChange={event => setDate(event.target.value)} aria-label="按时间搜索" /></label>
             <label className="review-query"><input value={query} onChange={event => setQuery(event.target.value)} placeholder="输入活动名称/发布人/地点/关键词" aria-label="活动查询" /><span aria-hidden="true">⌕</span></label>
-            <button className="review-query-button" type="button" onClick={() => setNotice(filteredActivities.length ? `已查询到 ${filteredActivities.length} 场已结束活动` : '没有匹配的活动')}>⌕ 活动查询</button>
+            <button className="review-query-button" type="button" onClick={() => setNotice(filteredActivities.length ? `已查询到 ${filteredActivities.length} 场已结束活动` : '没有匹配的活动')}>活动查询</button>
           </div>
 
           <div className="review-workspace-heading"><div><h2>活动结果总览</h2><span>仅展示已结束活动</span></div><button type="button" onClick={() => { setQuery(''); setType(''); setDate(''); setNotice('筛选条件已重置') }}>↻ 重置筛选</button></div>
