@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { categoryIcons, navigationIcons } from '../constants/assets'
+import { categoryIcons, loginMascotIcons, navigationIcons } from '../constants/assets'
 import type { UserRole } from '../types/auth'
 
 interface LoginPageProps {
@@ -56,7 +56,9 @@ export function LoginPage({ onSelectRole }: LoginPageProps) {
       <div className="login-page__background" aria-hidden="true" />
       <section className="login-panel" aria-labelledby="login-title">
         <div className="login-brand">
-          <span className="login-brand__emblem" aria-hidden="true">✦</span>
+          <span className="login-brand__emblem" aria-hidden="true">
+            <img src={loginMascotIcons.brand} alt="" />
+          </span>
           <p>招商银行 · 青春梦工场</p>
           <h1 id="login-title">实习生全周期智能成长平台</h1>
           <span>请选择身份，开启你的成长旅程</span>
@@ -87,4 +89,3 @@ export function LoginPage({ onSelectRole }: LoginPageProps) {
     </main>
   )
 }
-

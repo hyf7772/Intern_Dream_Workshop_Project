@@ -27,6 +27,10 @@ export const profileAvatars = {
   mentor: `${ICON_ROOT}/mentor-avatar.png`,
 } as const
 
+export const loginMascotIcons = {
+  brand: `${ICON_ROOT}/288283da-c07f-4a5c-9201-79aeca8f9581.png`,
+} as const
+
 export const categoryIcons: Record<TaskPageId, string> = {
   newcomer: `${ICON_ROOT}/category-newcomer.png`,
   mainline: `${ICON_ROOT}/category-mainline.png`,
