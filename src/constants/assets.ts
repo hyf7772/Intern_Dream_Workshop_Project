@@ -42,3 +42,13 @@ export const navigationIcons: Record<NavigationId, string> = {
 }
 
 export const sharedActivityIcon = `${ICON_ROOT}/activity-shared.png`
+
+export const taskIcons = {
+  checklist: sharedActivityIcon,
+  taskPlan: `${ICON_ROOT}/3f1209a7-1fe2-4de0-8204-743413d5e115.png`,
+  sports: `${ICON_ROOT}/f0b9227d-af7b-4e37-9581-1c382bdef72b.png`,
+  branchVisit: `${ICON_ROOT}/877f1149-c894-487f-857d-6be5ce94bca1.png`,
+  announcement: `${ICON_ROOT}/605370fc-2e18-4d89-ae13-42e952ba5de5.png`,
+  communication: `${ICON_ROOT}/7d7ad457-d4e0-487a-a725-2ca44ea3a0ae.png`,
+  handbook: `${ICON_ROOT}/f631f4ee-e48a-49e1-8dec-6d722b6b26b5.png`,
+} as const

@@ -1,4 +1,4 @@
-import { sharedActivityIcon, statIcons } from '../constants/assets'
+import { statIcons } from '../constants/assets'
 import type { TaskItem } from '../types/task'
 
 interface TaskRowProps {
@@ -11,7 +11,7 @@ export function TaskRow({ task, completed, onAction }: TaskRowProps) {
   return (
     <article className={`task-row ${task.recommended ? 'is-recommended' : ''}`}>
       {task.recommended && <span className="recommended-ribbon">推荐</span>}
-      <div className="task-row__icon"><img src={sharedActivityIcon} alt="" aria-hidden="true" /></div>
+      <div className="task-row__icon"><img src={task.icon} alt="" aria-hidden="true" /></div>
       <div className="task-row__copy"><h3>{task.title}</h3><p>{task.description}</p></div>
       <div className="task-row__status">
         {typeof task.progress === 'number' ? (
@@ -27,4 +27,3 @@ export function TaskRow({ task, completed, onAction }: TaskRowProps) {
     </article>
   )
 }
-

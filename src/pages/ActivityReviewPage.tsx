@@ -26,7 +26,7 @@ interface ReviewActivity {
 }
 
 const endedActivities: ReviewActivity[] = [
-  { id: 'orientation', name: '实习生入职培训', type: '成长培训', publisher: '孙浩哲', department: '人力资源部', date: '2026-08-12', time: '09:00 ~ 17:00', location: '总部培训室 A', submitted: 120, participants: 120, points: 0, average: 60, reviewStatus: '待复盘', icon: '📖', files: ['签到记录.xlsx', '培训反馈汇总.pdf', '活动照片.zip'] },
+  { id: 'orientation', name: '实习生入职培训', type: '成长培训', publisher: '孙浩哲', department: '人力资源部', date: '2026-08-12', time: '09:00 ~ 17:00', location: '分行4F会议室', submitted: 120, participants: 120, points: 0, average: 60, reviewStatus: '待复盘', icon: '📖', files: ['签到记录.xlsx', '培训反馈汇总.pdf', '活动照片.zip'] },
   { id: 'forum', name: '实习生座谈会', type: '交流座谈', publisher: '阳洁', department: '人力资源部', date: '2026-08-10', time: '14:00 ~ 16:00', location: '多功能会议厅', submitted: 40, participants: 40, points: 1600, average: 40, reviewStatus: '已结束', icon: '👥', files: ['座谈纪要.xlsx', '现场照片.zip'] },
   { id: 'company-walk', name: '喵厂 company walk', type: '文化体验', publisher: '李然', department: '人力资源部', date: '2026-08-06', time: '15:00 ~ 16:30', location: '园区主要路线', submitted: 51, participants: 51, points: 1530, average: 30, reviewStatus: '已结束', icon: '🐾', files: ['路线说明.pdf', '活动照片.zip'] },
   { id: 'report', name: '结业汇报', type: '成果展示', publisher: '朱彦绮', department: '人力资源部', date: '2026-08-16', time: '13:30 ~ 17:00', location: '演讲厅 B 区', submitted: 64, participants: 64, points: 3840, average: 60, reviewStatus: '已结束', icon: '📊', files: ['汇报评分表.xlsx', '优秀作品集.pdf'] },

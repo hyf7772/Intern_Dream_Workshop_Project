@@ -19,6 +19,7 @@ export interface TaskStats {
 
 export interface TaskItem {
   id: string
+  icon: string
   title: string
   description: string
   status?: string
@@ -63,4 +64,3 @@ export interface UserSummary {
   level: number
   stars: number
 }
-

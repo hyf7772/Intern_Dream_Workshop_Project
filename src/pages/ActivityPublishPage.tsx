@@ -31,10 +31,19 @@ const initialForm: PublishForm = {
   date: '2026-08-12',
   start: '09:00',
   end: '17:00',
-  location: '总部培训室 A',
+  location: '分行4F会议室',
   stars: '60',
   participants: '2026届实习生 / 全员可报名',
-  content: '完成入职培训课程、签到参会、提交学习反馈，了解梦工场制度与成长规则。',
+  content: `培训为期一天。99名暑期实习生分为6组，每组16-17人（湛江、清远、花都、从化、增城等地实习生可自愿选择是否参加）。
+
+09:30-10:00      开班仪式  
+10:00-11:00      员工职业发展            
+11:10-12:00      招商银行企业文化          
+12:10-12:30      交流答疑
+12:30-14:00      午餐、午休
+14:20-15:20      招商银行公司金融体系     
+15:10-16:00      招商银行零售金融体系       
+16:10-17:00      消费者权益保护相关课程   `,
 }
 
 const initialAttachments: PublishAttachment[] = [
@@ -156,7 +165,7 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
               <label className="builder-field builder-field-wide"><span>活动名称 <em>*</em></span><input value={form.name} onChange={event => updateField('name', event.target.value)} placeholder="请输入活动名称" /></label>
               <label className="builder-field"><span>活动类型 <em>*</em></span><select value={form.type} onChange={event => updateField('type', event.target.value)}><option>通用活动</option><option>专业实践</option><option>成长培训</option><option>团队共创</option></select></label>
               <label className="builder-field builder-field-date"><span>活动时间 <em>*</em></span><div className="builder-time-fields"><input type="date" value={form.date} onChange={event => updateField('date', event.target.value)} /><input type="time" value={form.start} onChange={event => updateField('start', event.target.value)} /><i>—</i><input type="time" value={form.end} onChange={event => updateField('end', event.target.value)} /></div></label>
-              <label className="builder-field"><span>活动地点 <em>*</em></span><input value={form.location} onChange={event => updateField('location', event.target.value)} placeholder="如：总部培训室 A" /></label>
+              <label className="builder-field"><span>活动地点 <em>*</em></span><input value={form.location} onChange={event => updateField('location', event.target.value)} placeholder="如：分行4F会议室" /></label>
               <label className="builder-field builder-field-stars"><span>星愿值 <em>*</em></span><div className="builder-number-input"><img src={statIcons.stars} alt="" aria-hidden="true" /><input type="number" min="1" max="200" value={form.stars} onChange={event => updateField('stars', event.target.value)} /><span>分</span></div></label>
               <label className="builder-field builder-field-participants"><span>参与人员 <em>*</em></span><select value={form.participants} onChange={event => updateField('participants', event.target.value)}><option>2026届实习生 / 全员可报名</option><option>2026届实习生 / 数字化方向</option><option>人力资源部 / 指定成员</option></select></label>
             </div>
