@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { activityConfigIcons, statIcons } from '../constants/assets'
+import { activityConfigIcons, profileAvatars, statIcons } from '../constants/assets'
 import { activityOverviews } from '../mocks/activityData'
 import type { ActivityOverviewId, ActivityStatus } from '../types/activity'
 
@@ -73,8 +73,8 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
           <p>{config.subtitle}</p>
         </div>
         <aside className="activity-user-card" aria-label="当前登录用户">
-          <div className="activity-user-card__avatar" aria-hidden="true">👩🏻‍💼</div>
-          <div><strong>张悦</strong><small>活动配置中心</small></div>
+          <div className="activity-user-card__avatar" aria-hidden="true"><img src={profileAvatars.activityManager} alt="" /></div>
+          <div><strong>阳洁</strong><small>活动配置中心</small></div>
         </aside>
       </header>
 

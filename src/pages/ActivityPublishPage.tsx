@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { activityConfigIcons, statIcons } from '../constants/assets'
+import { activityConfigIcons, profileAvatars, statIcons } from '../constants/assets'
 import type { ActivityPageId } from '../types/activity'
 
 interface ActivityPublishPageProps {
@@ -44,12 +44,12 @@ const initialAttachments: PublishAttachment[] = [
 
 const smartGroups = [
   { name: '第一组', count: 12, members: ['李明', '王欣', '周宁'], tone: 'mint' },
-  { name: '第二组', count: 12, members: ['陈宇', '赵雅', '林然'], tone: 'blue' },
+  { name: '第二组', count: 12, members: ['朱彦绮', '赵雅', '林然'], tone: 'blue' },
   { name: '第三组', count: 11, members: ['张子涵', '吴桐', '何川'], tone: 'gold' },
 ]
 
 const manualGroups = [
-  { name: '产品运营组', count: 10, members: ['李明', '王欣', '陈宇'], tone: 'mint' },
+  { name: '产品运营组', count: 10, members: ['李明', '王欣', '朱彦绮'], tone: 'mint' },
   { name: '人力资源组', count: 13, members: ['周宁', '赵雅', '林然'], tone: 'blue' },
   { name: '市场实践组', count: 12, members: ['张子涵', '吴桐', '何川'], tone: 'gold' },
 ]
@@ -128,8 +128,8 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
           <p>创建并配置实习生活动内容</p>
         </div>
         <aside className="activity-user-card" aria-label="当前登录用户">
-          <div className="activity-user-card__avatar" aria-hidden="true">👩🏻‍💼</div>
-          <div><strong>张悦</strong><small>活动配置中心</small></div>
+          <div className="activity-user-card__avatar" aria-hidden="true"><img src={profileAvatars.activityManager} alt="" /></div>
+          <div><strong>阳洁</strong><small>活动配置中心</small></div>
         </aside>
       </header>
 

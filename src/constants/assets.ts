@@ -21,6 +21,12 @@ export const activityConfigIcons = {
   },
 } as const
 
+export const profileAvatars = {
+  activityManager: `${ICON_ROOT}/84f9a030-1d33-4277-ae62-c6b020ad10af.png`,
+  intern: `${ICON_ROOT}/23926e49-04d6-4b2a-adea-5b04b541825f.png`,
+  mentor: `${ICON_ROOT}/mentor-avatar.png`,
+} as const
+
 export const categoryIcons: Record<TaskPageId, string> = {
   newcomer: `${ICON_ROOT}/category-newcomer.png`,
   mainline: `${ICON_ROOT}/category-mainline.png`,
