@@ -3223,6 +3223,7 @@ img.activity-stars {
 .gift-upload-placeholder span { color: var(--points-red); font-size: 24px; line-height: 1; }
 .gift-upload-placeholder strong { color: #76554c; font-size: 12px; }
 .gift-upload-placeholder small { color: #af9187; font-size: 10px; }
+.gift-upload-placeholder img { display: block; width: 76px; height: 54px; object-fit: contain; object-position: center; }
 .points-field { display: grid; gap: 5px; margin-top: 10px; color: #805f54; font-size: 11px; font-weight: 900; }
 .points-field input,
 .points-field select { width: 100%; height: 34px; padding: 0 9px; border: 1px solid #eedbd2; border-radius: 7px; color: #654d45; background: #fff; outline: none; font: inherit; font-size: 11px; }
@@ -3302,19 +3303,27 @@ img.activity-stars {
   background-color: #fff8f4;
   background-repeat: no-repeat;
   background-position: center;
-  background-size: cover;
 }
 
 .points-page .gift-image-placeholder {
-  background-image: url('/assets/icons/3be3a0fc-1a69-4539-bb48-d8a83d4c1320.png');
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  vertical-align: middle;
 }
 
-.points-page .redemption-table .gift-image-placeholder {
-  background-image: url('/assets/icons/b9771bde-48e8-45eb-b679-bf2e6eb3dd34.png');
+.points-page .gift-image-placeholder img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
 }
 
 .points-page .recipient-placeholder {
   background-image: url('/assets/icons/0dfe422f-88c4-455b-839e-677070ec4c8a.png');
+  background-size: cover;
 }
 .full-width { width: calc(100% - 30px); margin: 0 15px; }
 .redemption-note { margin: 13px 15px 15px; padding: 10px; border: 1px solid #f1d7cc; border-radius: 9px; background: #fff8f4; }

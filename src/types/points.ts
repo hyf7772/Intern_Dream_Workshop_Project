@@ -20,6 +20,7 @@ export interface RankingMember {
 export interface GiftItem {
   id: string
   name: string
+  image?: string
   points: number
   stock: number
   status: GiftStatus
@@ -38,6 +39,7 @@ export interface RedemptionRecord {
   id: string
   giftId: string
   giftName: string
+  image?: string
   points: number
   redeemedCount: number
   issuedCount: number
