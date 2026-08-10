@@ -1,16 +1,16 @@
 import type { GiftItem, RankingMember, RedemptionRecord } from '../types/points'
 
 export const rankingMembers: RankingMember[] = [
-  { id: 'r01', name: '王语桐', department: '市场营销部', position: '市场营销实习生', weekly: 320, monthly: 1280, quarter: 2480, cumulative: 1280, change: 2, changeDirection: 'up' },
-  { id: 'r02', name: '李明轩', department: '产品运营部', position: '产品运营实习生', weekly: 280, monthly: 1160, quarter: 2310, cumulative: 1160, change: 1, changeDirection: 'up' },
-  { id: 'r03', name: '张子涵', department: '技术研发部', position: '前端开发实习生', weekly: 260, monthly: 1080, quarter: 2180, cumulative: 1080, change: 1, changeDirection: 'down' },
+  { id: 'r01', name: '王语桐', department: '人力资源部', position: '人力招聘实习生', weekly: 320, monthly: 1280, quarter: 2480, cumulative: 1280, change: 2, changeDirection: 'up' },
+  { id: 'r02', name: '李明轩', department: '分行运营部', position: '运营实习生', weekly: 280, monthly: 1160, quarter: 2310, cumulative: 1160, change: 1, changeDirection: 'up' },
+  { id: 'r03', name: '张子涵', department: '信息技术部', position: '系统研发实习生', weekly: 260, monthly: 1080, quarter: 2180, cumulative: 1080, change: 1, changeDirection: 'down' },
   { id: 'r04', name: '陈思雨', department: '人力资源部', position: '人事学习生', weekly: 210, monthly: 980, quarter: 1950, cumulative: 980, change: 1, changeDirection: 'up' },
   { id: 'r05', name: '刘宇航', department: '数据分析部', position: '数据分析实习生', weekly: 190, monthly: 920, quarter: 1870, cumulative: 920, change: 1, changeDirection: 'down' },
-  { id: 'r06', name: '周子墨', department: '产品运营部', position: '内容运营实习生', weekly: 180, monthly: 860, quarter: 1760, cumulative: 860, change: 2, changeDirection: 'up' },
-  { id: 'r07', name: '赵晨曦', department: '技术研发部', position: '后端开发实习生', weekly: 160, monthly: 790, quarter: 1650, cumulative: 790, change: 0, changeDirection: 'flat' },
-  { id: 'r08', name: '孙雨桐', department: '市场营销部', position: '活动策划实习生', weekly: 150, monthly: 720, quarter: 1530, cumulative: 720, change: 1, changeDirection: 'up' },
-  { id: 'r09', name: '吴俊杰', department: '设计部', position: 'UI设计实习生', weekly: 120, monthly: 680, quarter: 1460, cumulative: 680, change: 2, changeDirection: 'down' },
-  { id: 'r10', name: '何欣怡', department: '客户成功部', position: '客服实习生', weekly: 110, monthly: 640, quarter: 1390, cumulative: 640, change: 0, changeDirection: 'flat' },
+  { id: 'r06', name: '周子墨', department: '分行运营部', position: '内容运营实习生', weekly: 180, monthly: 860, quarter: 1760, cumulative: 860, change: 2, changeDirection: 'up' },
+  { id: 'r07', name: '赵晨曦', department: '信息技术部', position: '后端开发实习生', weekly: 160, monthly: 790, quarter: 1650, cumulative: 790, change: 0, changeDirection: 'flat' },
+  { id: 'r08', name: '孙雨桐', department: '人力资源部', position: '活动策划实习生', weekly: 150, monthly: 720, quarter: 1530, cumulative: 720, change: 1, changeDirection: 'up' },
+  { id: 'r09', name: '吴俊杰', department: '公司金融部', position: '公司金融实习生', weekly: 120, monthly: 680, quarter: 1460, cumulative: 680, change: 2, changeDirection: 'down' },
+  { id: 'r10', name: '何欣怡', department: '客户服务部', position: '客服实习生', weekly: 110, monthly: 640, quarter: 1390, cumulative: 640, change: 0, changeDirection: 'flat' },
   { id: 'r11', name: '林然', department: '零售金融部', position: '客户服务实习生', weekly: 100, monthly: 590, quarter: 1280, cumulative: 590, change: 1, changeDirection: 'up' },
   { id: 'r12', name: '谢安琪', department: '财务管理部', position: '财务分析实习生', weekly: 90, monthly: 540, quarter: 1170, cumulative: 540, change: 1, changeDirection: 'down' },
 ]
@@ -28,18 +28,18 @@ export const initialGifts: GiftItem[] = [
 
 export const initialRedemptionRecords: RedemptionRecord[] = [
   {
-    id: 'e01', giftId: 'g01', giftName: '招商银行帆布袋', points: 200, redeemedCount: 32, issuedCount: 20, status: '部分发放',
+    id: 'e01', giftId: 'g01', giftName: '招商银行帆布袋', points: 200, redeemedCount: 32, issuedCount: 20, status: '正发放',
     recipients: [
       { id: 'p01', name: '陈思雨', department: '人力资源部 / 人事实习生', redeemedAt: '2025-05-16', issued: false },
       { id: 'p02', name: '刘宇航', department: '数据分析部 / 数据分析实习生', redeemedAt: '2025-05-17', issued: false },
-      { id: 'p03', name: '周子墨', department: '产品运营部 / 内容运营实习生', redeemedAt: '2025-05-17', issued: true },
-      { id: 'p04', name: '吴俊杰', department: '设计部 / UI设计实习生', redeemedAt: '2025-05-18', issued: true },
-      { id: 'p05', name: '何欣怡', department: '客户成功部 / 客服实习生', redeemedAt: '2025-05-18', issued: true },
+      { id: 'p03', name: '周子墨', department: '分行运营部 / 内容运营实习生', redeemedAt: '2025-05-17', issued: true },
+      { id: 'p04', name: '吴俊杰', department: '公司金融部 / 公司金融实习生', redeemedAt: '2025-05-18', issued: true },
+      { id: 'p05', name: '何欣怡', department: '客户服务部 / 客服实习生', redeemedAt: '2025-05-18', issued: true },
     ],
   },
   { id: 'e02', giftId: 'g02', giftName: '招商银行保温杯', points: 300, redeemedCount: 18, issuedCount: 18, status: '已发放', recipients: [] },
-  { id: 'e03', giftId: 'g03', giftName: '招商银行晴雨伞', points: 300, redeemedCount: 23, issuedCount: 18, status: '部分发放', recipients: [] },
+  { id: 'e03', giftId: 'g03', giftName: '招商银行晴雨伞', points: 300, redeemedCount: 23, issuedCount: 18, status: '正发放', recipients: [] },
   { id: 'e04', giftId: 'g04', giftName: '招商银行笔记本礼盒', points: 500, redeemedCount: 12, issuedCount: 0, status: '待发放', recipients: [] },
-  { id: 'e05', giftId: 'g05', giftName: '招商银行小招喵公仔', points: 800, redeemedCount: 9, issuedCount: 7, status: '部分发放', recipients: [] },
+  { id: 'e05', giftId: 'g05', giftName: '招商银行小招喵公仔', points: 800, redeemedCount: 9, issuedCount: 7, status: '正发放', recipients: [] },
   { id: 'e06', giftId: 'g06', giftName: '招商银行马克杯', points: 500, redeemedCount: 26, issuedCount: 26, status: '已发放', recipients: [] },
 ]

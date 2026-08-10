@@ -1,7 +1,7 @@
 export type PointsPageId = 'ranking' | 'gifts' | 'redemptions'
 export type PointsPeriod = 'week' | 'month' | 'quarter'
 export type GiftStatus = '上架' | '下架' | '编辑中'
-export type RedemptionStatus = '待发放' | '部分发放' | '已发放'
+export type RedemptionStatus = '待发放' | '正发放' | '已发放'
 export type RankingChange = 'up' | 'down' | 'flat'
 
 export interface RankingMember {
