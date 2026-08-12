@@ -23,6 +23,43 @@ button {
   font: inherit;
 }
 
+.role-selection-back {
+  position: absolute;
+  z-index: 6;
+  top: clamp(16px, 2.2vh, 26px);
+  left: clamp(18px, 2.2vw, 34px);
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 12px 0 9px;
+  border: 1px solid rgba(224, 183, 96, 0.9);
+  border-radius: 999px;
+  color: #715d43;
+  background: rgba(255, 253, 245, 0.92);
+  box-shadow: 0 5px 14px rgba(87, 66, 37, 0.12);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+  backdrop-filter: blur(8px);
+}
+
+.role-selection-back span {
+  color: #c7832d;
+  font-size: 23px;
+  line-height: 0.7;
+}
+
+.role-selection-back:hover,
+.role-selection-back:focus-visible {
+  border-color: #c7832d;
+  color: #9a5d1b;
+  background: #fffaf0;
+  box-shadow: 0 7px 17px rgba(87, 66, 37, 0.18);
+  outline: none;
+  transform: translateY(-1px);
+}
+
 .login-page {
   position: relative;
   display: grid;
@@ -373,18 +410,15 @@ button {
   height: 100dvh;
   place-items: center;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 50% 18%, rgba(36, 141, 219, 0.45), transparent 45%),
-    #071d3b;
+  background: #147dc7;
 }
 
 .game-stage {
   position: relative;
-  width: min(100vw, calc(100dvh * 1672 / 941));
-  aspect-ratio: 1672 / 941;
+  width: 100vw;
+  height: 100dvh;
   overflow: hidden;
   isolation: isolate;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.42);
 }
 
 .game-stage__background {

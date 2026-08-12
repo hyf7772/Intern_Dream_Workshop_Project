@@ -48,6 +48,14 @@ function App() {
   const navigateToActivityPage = (page: ActivityPageId) => { window.location.hash = `/activities/${page}`; setActivityPage(page) }
   const navigateToPointsPage = (page: PointsPageId) => { window.location.hash = `/points/${page}`; setPointsPage(page) }
   const navigateHome = () => { window.history.pushState(null, '', window.location.pathname); setTaskPage(null); setActivityPage(null); setPointsPage(null) }
+  const navigateToRoleSelection = () => {
+    authService.clearSession()
+    window.history.pushState(null, '', window.location.pathname)
+    setCurrentUser(null)
+    setTaskPage(null)
+    setActivityPage(null)
+    setPointsPage(null)
+  }
   const selectRole = async (role: UserRole): Promise<'entered' | 'unavailable'> => {
     const user = await authService.signInAsRole(role)
     authService.saveSession(user)
@@ -57,24 +65,27 @@ function App() {
 
   if (!currentUser) return <LoginPage onSelectRole={selectRole} />
 
-  if (currentUser.role === 'admin' && pointsPage) return <PointsPage pageId={pointsPage} onPageChange={navigateToPointsPage} onHome={navigateHome} />
+  let pageContent = taskPage
+    ? <TaskCenterPage pageId={taskPage} onPageChange={navigateToTaskPage} onHome={navigateHome} />
+    : <HomePage role={currentUser.role} onOpenTasks={() => navigateToTaskPage('newcomer')} onOpenActivities={() => navigateToActivityPage('general')} onOpenPoints={() => navigateToPointsPage('ranking')} onReturnRoleSelection={navigateToRoleSelection} />
 
-  if (currentUser.role === 'admin' && activityPage) {
-    if (activityPage === 'publish') return <ActivityPublishPage onPageChange={navigateToActivityPage} onHome={navigateHome} />
-    if (activityPage === 'review') return <ActivityReviewPage onPageChange={navigateToActivityPage} onHome={navigateHome} />
-
-    return <ActivityOverviewPage
-      pageId={activityPage}
-      onPageChange={page => navigateToActivityPage(page)}
-      onOpenPublish={() => navigateToActivityPage('publish')}
-      onOpenReview={() => navigateToActivityPage('review')}
-      onHome={navigateHome}
-    />
+  if (currentUser.role === 'admin' && pointsPage) {
+    pageContent = <PointsPage pageId={pointsPage} onPageChange={navigateToPointsPage} onHome={navigateHome} />
+  } else if (currentUser.role === 'admin' && activityPage) {
+    pageContent = activityPage === 'publish'
+      ? <ActivityPublishPage onPageChange={navigateToActivityPage} onHome={navigateHome} />
+      : activityPage === 'review'
+        ? <ActivityReviewPage onPageChange={navigateToActivityPage} onHome={navigateHome} />
+        : <ActivityOverviewPage
+          pageId={activityPage}
+          onPageChange={page => navigateToActivityPage(page)}
+          onOpenPublish={() => navigateToActivityPage('publish')}
+          onOpenReview={() => navigateToActivityPage('review')}
+          onHome={navigateHome}
+        />
   }
 
-  return taskPage
-    ? <TaskCenterPage pageId={taskPage} onPageChange={navigateToTaskPage} onHome={navigateHome} />
-    : <HomePage role={currentUser.role} onOpenTasks={() => navigateToTaskPage('newcomer')} onOpenActivities={() => navigateToActivityPage('general')} onOpenPoints={() => navigateToPointsPage('ranking')} />
+  return pageContent
 }
 
 export default App

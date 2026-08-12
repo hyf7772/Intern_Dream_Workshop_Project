@@ -9,6 +9,7 @@ interface HomePageProps {
   onOpenTasks: () => void
   onOpenActivities: () => void
   onOpenPoints: () => void
+  onReturnRoleSelection: () => void
 }
 
 const homeBackgrounds: Record<UserRole, string> = {
@@ -16,7 +17,7 @@ const homeBackgrounds: Record<UserRole, string> = {
   intern: '/home-intern.png',
 }
 
-export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints }: HomePageProps) {
+export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints, onReturnRoleSelection }: HomePageProps) {
   const [modules, setModules] = useState<ModuleItem[]>([])
   const [activeModule, setActiveModule] = useState<ModuleItem | null>(null)
   const [notice, setNotice] = useState('')
@@ -54,6 +55,9 @@ export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints }: 
     <main className={`app-shell app-shell--${role}`}>
       <section className="game-stage" aria-label="青春梦工场互动地图首页">
         <img className="game-stage__background" src={homeBackgrounds[role]} alt="青春梦工场园区地图" />
+        <button className="role-selection-back" type="button" onClick={onReturnRoleSelection} aria-label="返回身份选择页">
+          <span aria-hidden="true">‹</span> 返回身份选择
+        </button>
         <button className="utility-hit utility-hit--growth" type="button" aria-label="查看本周成长" onClick={() => setNotice('本周已完成 7 项培养任务，成长进度 72%')} />
         <button className="utility-hit utility-hit--profile" type="button" aria-label="查看个人信息" onClick={() => setNotice(role === 'admin' ? '成长管理员 · 人力导师侧' : '梦想实习生 · Lv.6 · 星愿值 1280')} />
         <div className="module-layer" aria-label="成长模块入口">
