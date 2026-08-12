@@ -6,6 +6,7 @@ import { PointsPage } from './pages/PointsPage'
 import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { TaskCenterPage } from './pages/TaskCenterPage'
+import { InternWelcomeCarousel } from './components/InternWelcomeCarousel'
 import { authService } from './services/authService'
 import type { AuthUser, UserRole } from './types/auth'
 import type { ActivityPageId } from './types/activity'
@@ -30,6 +31,7 @@ const readPointsPageFromHash = (): PointsPageId | null => {
 
 function App() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => authService.restoreSession())
+  const [pendingInternWelcome, setPendingInternWelcome] = useState<AuthUser | null>(null)
   const [taskPage, setTaskPage] = useState<TaskPageId | null>(() => readTaskPageFromHash())
   const [activityPage, setActivityPage] = useState<ActivityPageId | null>(() => readActivityPageFromHash())
   const [pointsPage, setPointsPage] = useState<PointsPageId | null>(() => readPointsPageFromHash())
@@ -58,12 +60,28 @@ function App() {
   }
   const selectRole = async (role: UserRole): Promise<'entered' | 'unavailable'> => {
     const user = await authService.signInAsRole(role)
+    if (role === 'intern') {
+      setPendingInternWelcome(user)
+      return 'entered'
+    }
     authService.saveSession(user)
     setCurrentUser(user)
     return 'entered'
   }
 
-  if (!currentUser) return <LoginPage onSelectRole={selectRole} />
+  const completeInternWelcome = () => {
+    if (!pendingInternWelcome) return
+    authService.saveSession(pendingInternWelcome)
+    setCurrentUser(pendingInternWelcome)
+    setPendingInternWelcome(null)
+  }
+
+  if (!currentUser) {
+    return <>
+      <LoginPage onSelectRole={selectRole} />
+      {pendingInternWelcome && <InternWelcomeCarousel onComplete={completeInternWelcome} />}
+    </>
+  }
 
   let pageContent = taskPage
     ? <TaskCenterPage pageId={taskPage} onPageChange={navigateToTaskPage} onHome={navigateHome} />

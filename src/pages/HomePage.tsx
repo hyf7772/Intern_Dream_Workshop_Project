@@ -20,12 +20,29 @@ const homeBackgrounds: Record<UserRole, string> = {
 export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints, onReturnRoleSelection }: HomePageProps) {
   const [modules, setModules] = useState<ModuleItem[]>([])
   const [activeModule, setActiveModule] = useState<ModuleItem | null>(null)
+  const [previewIndex, setPreviewIndex] = useState(0)
   const [notice, setNotice] = useState('')
+
+  const closeModulePreview = () => {
+    setActiveModule(null)
+    setPreviewIndex(0)
+  }
+
+  const activePreviewImages = activeModule?.previewImages ?? (activeModule?.previewImage ? [activeModule.previewImage] : [])
+  const isGrowthJournal = activePreviewImages.length > 1
+
+  const advancePreview = () => {
+    if (previewIndex >= activePreviewImages.length - 1) {
+      closeModulePreview()
+      return
+    }
+    setPreviewIndex(index => index + 1)
+  }
 
   useEffect(() => { taskService.getHomeModules(role).then(setModules) }, [role])
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') setActiveModule(null) }
+    const handleKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') closeModulePreview() }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [])
@@ -40,7 +57,10 @@ export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints, on
     if (module.id === 'tasks' && role === 'intern') onOpenTasks()
     else if (module.id === 'activities' && role === 'admin') onOpenActivities()
     else if (module.id === 'ranking' && role === 'admin') onOpenPoints()
-    else setActiveModule(module)
+    else {
+      setPreviewIndex(0)
+      setActiveModule(module)
+    }
   }
 
   const handleNavigation = (id: NavigationId, label: string) => {
@@ -82,11 +102,24 @@ export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints, on
         <div className="landscape-hint" role="status">横屏浏览体验更佳</div>
         {notice && <div className="toast" role="status" aria-live="polite">{notice}</div>}
         {activeModule && (
-          <div className="modal-backdrop" role="presentation" onMouseDown={event => { if (event.currentTarget === event.target) setActiveModule(null) }}>
-            {activeModule.previewImage ? (
-              <section className="module-image-modal" role="dialog" aria-modal="true" aria-label={`${activeModule.name}展示`}>
-                <button className="module-image-modal__close" type="button" onClick={() => setActiveModule(null)} aria-label="关闭并返回实习生主页面">×</button>
-                <img src={activeModule.previewImage} alt={activeModule.previewAlt ?? activeModule.name} />
+          <div className="modal-backdrop" role="presentation" onMouseDown={event => { if (event.currentTarget === event.target) closeModulePreview() }}>
+            {activePreviewImages.length > 0 ? (
+              <section className={`module-image-modal${isGrowthJournal ? ' module-image-modal--journal' : ''}`} role="dialog" aria-modal="true" aria-label={`${activeModule.name}展示`}>
+                <button className="module-image-modal__close" type="button" onClick={closeModulePreview} aria-label="关闭并返回实习生主页面">×</button>
+                {isGrowthJournal && <span className="module-image-modal__progress" aria-live="polite">{previewIndex + 1} / {activePreviewImages.length}</span>}
+                {isGrowthJournal ? (
+                  <button
+                    className="module-image-modal__image-button"
+                    type="button"
+                    onClick={advancePreview}
+                    aria-label={previewIndex === activePreviewImages.length - 1 ? '完成成长回顾并返回实习生主页面' : `查看成长回顾第 ${previewIndex + 2} 页`}
+                  >
+                    <img src={activePreviewImages[previewIndex]} alt={`${activeModule.previewAlt ?? activeModule.name}（第 ${previewIndex + 1} 页）`} />
+                  </button>
+                ) : (
+                  <img src={activePreviewImages[0]} alt={activeModule.previewAlt ?? activeModule.name} />
+                )}
+                {isGrowthJournal && <span className="module-image-modal__hint">{previewIndex === activePreviewImages.length - 1 ? '点击完成回顾' : '点击图片查看下一页'}</span>}
               </section>
             ) : (
               <section className="module-modal" role="dialog" aria-modal="true" aria-labelledby="module-modal-title">
@@ -95,7 +128,7 @@ export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints, on
                 <h2 id="module-modal-title">{activeModule.name}</h2>
                 <p>{activeModule.summary}</p>
                 <p className="module-modal__coming">该模块将在后续阶段逐步接入。</p>
-                <div className="module-modal__actions"><button type="button" onClick={() => setActiveModule(null)}>返回地图</button></div>
+                <div className="module-modal__actions"><button type="button" onClick={closeModulePreview}>返回地图</button></div>
               </section>
             )}
           </div>

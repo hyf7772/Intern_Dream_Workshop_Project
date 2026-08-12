@@ -413,6 +413,93 @@ button {
   background: #147dc7;
 }
 
+.intern-welcome-backdrop {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  display: grid;
+  padding: 72px 36px;
+  background: rgba(7, 27, 55, 0.78);
+  backdrop-filter: blur(8px);
+  place-items: center;
+  animation: fade-in 200ms ease both;
+}
+
+.intern-welcome-carousel {
+  position: relative;
+  width: min(88vw, calc(74vh * 1.777));
+  max-width: 1280px;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.5);
+  animation: modal-in 260ms cubic-bezier(0.2, 0.9, 0.22, 1.2) both;
+}
+
+.intern-welcome-carousel__image-button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid rgba(255, 239, 181, 0.94);
+  border-radius: 18px;
+  background: #fffdf6;
+  cursor: pointer;
+}
+
+.intern-welcome-carousel__image-button img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.intern-welcome-carousel__progress,
+.intern-welcome-carousel__hint,
+.intern-welcome-carousel__close {
+  position: absolute;
+  z-index: 1;
+  border: 1px solid rgba(101, 61, 24, 0.22);
+  color: #69401f;
+  background: rgba(255, 253, 247, 0.96);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  font-weight: 800;
+}
+
+.intern-welcome-carousel__progress {
+  top: -44px;
+  left: 0;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.intern-welcome-carousel__close {
+  top: -48px;
+  right: 0;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  place-items: center;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.intern-welcome-carousel__hint {
+  bottom: -45px;
+  left: 50%;
+  padding: 7px 14px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.intern-welcome-carousel__close:hover,
+.intern-welcome-carousel__close:focus-visible,
+.intern-welcome-carousel__image-button:focus-visible {
+  outline: 3px solid rgba(255, 232, 143, 0.9);
+  outline-offset: 3px;
+}
+
 .game-stage {
   position: relative;
   width: 100vw;
@@ -703,6 +790,71 @@ button {
   height: auto;
 }
 
+.module-image-modal--journal {
+  width: min(38vw, 506px, calc(84vh * 0.563));
+  height: min(84vh, 900px);
+  max-height: none;
+  overflow: visible;
+}
+
+.module-image-modal__image-button {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.module-image-modal--journal img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.module-image-modal--journal .module-image-modal__image-button {
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.module-image-modal__progress,
+.module-image-modal__hint {
+  position: absolute;
+  z-index: 1;
+  border: 1px solid rgba(101, 61, 24, 0.2);
+  border-radius: 999px;
+  color: #69401f;
+  background: rgba(255, 253, 247, 0.92);
+  box-shadow: 0 3px 10px rgba(64, 39, 13, 0.16);
+  font-weight: 800;
+}
+
+.module-image-modal__progress {
+  top: 14px;
+  left: 14px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.module-image-modal__hint {
+  bottom: 14px;
+  left: 50%;
+  padding: 7px 13px;
+  transform: translateX(-50%);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.module-image-modal--journal .module-image-modal__progress {
+  top: -46px;
+  left: 0;
+}
+
+.module-image-modal--journal .module-image-modal__hint {
+  bottom: -44px;
+}
+
 .module-image-modal__close {
   position: absolute;
   z-index: 1;
@@ -720,6 +872,11 @@ button {
   place-items: center;
   font-size: 26px;
   line-height: 1;
+}
+
+.module-image-modal--journal .module-image-modal__close {
+  top: -48px;
+  right: 0;
 }
 
 .module-image-modal__close:hover,

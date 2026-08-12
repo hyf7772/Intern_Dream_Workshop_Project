@@ -9,6 +9,7 @@ export interface ModuleItem {
   className: string
   badge?: number
   previewImage?: string
+  previewImages?: string[]
   previewAlt?: string
 }
 
