@@ -8,6 +8,8 @@ export interface ModuleItem {
   summary: string
   className: string
   badge?: number
+  previewImage?: string
+  previewAlt?: string
 }
 
 export interface TaskStats {

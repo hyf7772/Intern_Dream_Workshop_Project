@@ -83,14 +83,21 @@ export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints, on
         {notice && <div className="toast" role="status" aria-live="polite">{notice}</div>}
         {activeModule && (
           <div className="modal-backdrop" role="presentation" onMouseDown={event => { if (event.currentTarget === event.target) setActiveModule(null) }}>
-            <section className="module-modal" role="dialog" aria-modal="true" aria-labelledby="module-modal-title">
-              <div className="module-modal__emblem" aria-hidden="true">✦</div>
-              <p className="module-modal__eyebrow">青春梦工场 · 模块预览</p>
-              <h2 id="module-modal-title">{activeModule.name}</h2>
-              <p>{activeModule.summary}</p>
-              <p className="module-modal__coming">该模块将在后续阶段逐步接入。</p>
-              <div className="module-modal__actions"><button type="button" onClick={() => setActiveModule(null)}>返回地图</button></div>
-            </section>
+            {activeModule.previewImage ? (
+              <section className="module-image-modal" role="dialog" aria-modal="true" aria-label={`${activeModule.name}展示`}>
+                <button className="module-image-modal__close" type="button" onClick={() => setActiveModule(null)} aria-label="关闭并返回实习生主页面">×</button>
+                <img src={activeModule.previewImage} alt={activeModule.previewAlt ?? activeModule.name} />
+              </section>
+            ) : (
+              <section className="module-modal" role="dialog" aria-modal="true" aria-labelledby="module-modal-title">
+                <div className="module-modal__emblem" aria-hidden="true">✦</div>
+                <p className="module-modal__eyebrow">青春梦工场 · 模块预览</p>
+                <h2 id="module-modal-title">{activeModule.name}</h2>
+                <p>{activeModule.summary}</p>
+                <p className="module-modal__coming">该模块将在后续阶段逐步接入。</p>
+                <div className="module-modal__actions"><button type="button" onClick={() => setActiveModule(null)}>返回地图</button></div>
+              </section>
+            )}
           </div>
         )}
       </section>

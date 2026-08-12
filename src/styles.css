@@ -685,6 +685,51 @@ button {
   animation: modal-in 260ms cubic-bezier(0.2, 0.9, 0.22, 1.2) both;
 }
 
+.module-image-modal {
+  position: relative;
+  width: min(960px, 80vw);
+  max-height: 90vh;
+  overflow: auto;
+  border: 2px solid rgba(255, 239, 181, 0.88);
+  border-radius: 18px;
+  background: #fffdf6;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.5);
+  animation: modal-in 260ms cubic-bezier(0.2, 0.9, 0.22, 1.2) both;
+}
+
+.module-image-modal img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.module-image-modal__close {
+  position: absolute;
+  z-index: 1;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 35px;
+  height: 35px;
+  border: 1px solid rgba(101, 61, 24, 0.22);
+  border-radius: 50%;
+  color: #754a2a;
+  background: rgba(255, 253, 247, 0.92);
+  box-shadow: 0 4px 12px rgba(64, 39, 13, 0.18);
+  cursor: pointer;
+  place-items: center;
+  font-size: 26px;
+  line-height: 1;
+}
+
+.module-image-modal__close:hover,
+.module-image-modal__close:focus-visible {
+  color: #bd231d;
+  background: #fff;
+  outline: none;
+  transform: translateY(-1px);
+}
+
 .module-modal__emblem {
   display: grid;
   width: clamp(54px, 6vw, 82px);
