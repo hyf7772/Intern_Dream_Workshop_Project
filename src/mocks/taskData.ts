@@ -6,11 +6,13 @@ export const mockUser: UserSummary = { displayName: '梦想实习生', level: 6,
 export const mockTaskPages: Record<TaskPageId, TaskPageConfig> = {
   newcomer: {
     id: 'newcomer', title: '新手任务', subtitle: '完成入职准备，开启梦工场旅程',
-    stats: { completed: 3, total: 5, stars: 120, daysRemaining: 5 },
+    stats: { completed: 3, total: 7, stars: 120, daysRemaining: 5 },
     sections: [
       { id: 'onboarding', title: '入职准备', eyebrow: '快速完成资料与合规准备', tasks: [
         { id: 'resume-upload', icon: taskIcons.checklist, title: '上传个人简历', description: '提交最新版简历，建立个人成长档案', status: '待上传', reward: 30, action: '上传简历', actionDone: '已上传' },
         { id: 'resume-improve', icon: taskIcons.taskPlan, title: '完善个人简历', description: '根据AI建议补充项目成果与专业技能', progress: 75, progressLabel: '完整度 75%', reward: 50, action: '继续完善', actionDone: '已更新' },
+        { id: 'education-verification', icon: taskIcons.taskPlan, title: '上传学历认证报告', description: '提交学历认证报告，完善实习生身份资料', status: '待上传', reward: 40, action: '上传报告', actionDone: '已上传' },
+        { id: 'compliance-training', icon: taskIcons.handbook, title: '完成合规保密培训', description: '学习信息安全与保密规范，完成培训测试', status: '待学习', reward: 50, action: '开始培训', actionDone: '已完成' },
         { id: 'office-rules', icon: taskIcons.handbook, title: '阅读实习办公要求', description: '了解办公规范、信息安全与保密要求', progress: 67, progressLabel: '阅读 2/3', reward: 40, action: '继续阅读', actionDone: '已阅读' },
       ] },
       { id: 'newcomer-events', title: '新人活动', eyebrow: '认识分行、导师与同期伙伴', tasks: [

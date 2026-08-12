@@ -78,6 +78,7 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
   const [groupMode, setGroupMode] = useState<'smart' | 'manual'>('smart')
   const [groupRule, setGroupRule] = useState('按岗位')
   const [showGroups, setShowGroups] = useState(false)
+  const [showPoster, setShowPoster] = useState(false)
   const [notice, setNotice] = useState('')
 
   const groups = useMemo(() => groupMode === 'smart' ? smartGroups : manualGroups, [groupMode])
@@ -116,6 +117,8 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
   }
 
   const saveDraft = () => setNotice('活动草稿已保存，可稍后继续配置')
+
+  const generatePoster = () => setShowPoster(true)
 
   const publishActivity = () => {
     if (!form.name.trim() || !form.date || !form.location.trim() || !form.content.trim()) {
@@ -202,12 +205,28 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
             </div>
           </div>
 
-          <footer className="builder-footer-actions"><button className="builder-button is-cancel" type="button" onClick={onHome}>取消</button><button className="builder-button is-outline" type="button" onClick={saveDraft}>保存草稿</button><button className="builder-button is-outline" type="button" onClick={() => setNotice('预览已打开，当前活动尚未正式发布')}>预览活动</button><button className="builder-button is-primary" type="button" onClick={publishActivity}> 发布活动</button></footer>
+          <footer className="builder-footer-actions"><button className="builder-button is-cancel" type="button" onClick={onHome}>取消</button><button className="builder-button is-outline" type="button" onClick={saveDraft}>保存草稿</button><button className="builder-button is-outline" type="button" onClick={() => setNotice('预览已打开，当前活动尚未正式发布')}>预览活动</button><button className="builder-button is-poster" type="button" onClick={generatePoster}>生成活动海报</button><button className="builder-button is-primary" type="button" onClick={publishActivity}> 发布活动</button></footer>
         </section>
       </section>
 
       {showGroups && <div className="activity-modal-backdrop" role="presentation" onClick={() => setShowGroups(false)}><section className="activity-modal group-modal" role="dialog" aria-modal="true" aria-labelledby="group-modal-title" onClick={event => event.stopPropagation()}><header><div><span className="modal-eyebrow">C · 分组设置</span><h2 id="group-modal-title">{groupMode === 'smart' ? '智能分组名单' : '手动分组名单'}</h2></div><button type="button" onClick={() => setShowGroups(false)} aria-label="关闭">×</button></header><p className="modal-summary">共 {totalPeople} 位参与人员，当前按“{groupRule}”规则分为 {groups.length} 组</p><div className="modal-group-list">{groups.map(group => <div className="modal-group" key={group.name}><div><strong>{group.name}</strong><span>{group.count} 人</span></div><p>{group.members.join('、')}、以及其他成员</p></div>)}</div><footer><button className="builder-button is-light" type="button" onClick={() => setShowGroups(false)}>返回编辑</button><button className="builder-button is-primary" type="button" onClick={() => { setShowGroups(false); setNotice('分组名单已确认') }}>确认分组</button></footer></section></div>}
+      {showPoster && <ActivityPosterPreview onClose={() => setShowPoster(false)} />}
       {notice && <div className="activity-toast" role="status">{notice}</div>}
     </main>
+  )
+}
+
+interface ActivityPosterPreviewProps {
+  onClose: () => void
+}
+
+function ActivityPosterPreview({ onClose }: ActivityPosterPreviewProps) {
+  return (
+    <div className="activity-poster-backdrop" role="presentation" onClick={onClose}>
+      <section className="activity-poster-modal" role="dialog" aria-modal="true" aria-label="活动海报预览" onClick={event => event.stopPropagation()}>
+        <button className="poster-image-close" type="button" onClick={onClose} aria-label="关闭海报预览">×</button>
+        <img className="poster-image" src="/assets/activity-poster.png" alt="实习生入职培训活动海报" />
+      </section>
+    </div>
   )
 }
