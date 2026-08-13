@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { activityConfigIcons, profileAvatars, statIcons } from '../constants/assets'
+import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
 import { activityOverviews } from '../mocks/activityData'
 import type { ActivityOverviewId, ActivityStatus } from '../types/activity'
 
@@ -91,7 +91,7 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
             <button type="button" onClick={onOpenPublish}><img className="activity-nav-icon" src={activityConfigIcons.publish} alt="" aria-hidden="true" />活动发布<i>›</i></button>
             <button type="button" onClick={onOpenReview}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />活动复盘<i>›</i></button>
           </nav>
-          <div className="activity-sidebar__illustration"><img src="/assets/activity-operations.png" alt="活动运营看板插画" /><strong>{pageId === 'general' ? '活动运营看板' : '专业实践看板'}</strong><p>{pageId === 'general' ? '统一配置与跟踪活动全流程' : '支持按岗位配置与追踪实践活动'}</p></div>
+          <div className="activity-sidebar__illustration"><img src={activityImages.operations} alt="活动运营看板插画" /><strong>{pageId === 'general' ? '活动运营看板' : '专业实践看板'}</strong><p>{pageId === 'general' ? '统一配置与跟踪活动全流程' : '支持按岗位配置与追踪实践活动'}</p></div>
         </aside>
 
         <section className="activity-content">

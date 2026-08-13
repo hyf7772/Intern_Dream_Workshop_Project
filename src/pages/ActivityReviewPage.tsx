@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { activityConfigIcons, profileAvatars, statIcons } from '../constants/assets'
+import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
 import type { ActivityPageId } from '../types/activity'
 
 interface ActivityReviewPageProps {
@@ -46,7 +46,7 @@ const reviewStatIcons = {
   endedActivities: activityConfigIcons.professional,
   pendingPoints: statIcons.stars,
   submittedResults: activityConfigIcons.stats.inProgress,
-  pendingReviews: '/assets/icons/1f73c0e2-f8f5-42da-b4d3-4d540ae49cb4.png',
+  pendingReviews: activityImages.pendingReviews,
 } as const
 
 export function ActivityReviewPage({ onPageChange, onHome }: ActivityReviewPageProps) {

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { pointsPageImages } from '../constants/assets'
 import { initialGifts, initialRedemptionRecords, rankingMembers } from '../mocks/pointsData'
 import type { GiftItem, GiftStatus, PointsPageId, PointsPeriod, RedemptionRecord } from '../types/points'
 
@@ -20,17 +21,7 @@ const periodLabels: Record<PointsPeriod, string> = { week: '本周', month: '本
 const periodField: Record<PointsPeriod, 'weekly' | 'monthly' | 'quarter'> = { week: 'weekly', month: 'monthly', quarter: 'quarter' }
 const emptyGiftDraft: GiftDraft = { name: '', points: '', stock: '', category: '实用周边', status: '上架' }
 
-const pointsAssets = {
-  adminAvatar: '/assets/icons/0dfe422f-88c4-455b-839e-677070ec4c8a.png',
-  rankingMale: '/assets/icons/23926e49-04d6-4b2a-adea-5b04b541825f.png',
-  rankingMaleBlue: '/assets/icons/8910584a-bd1f-41be-81c9-e7c2c6d8a052.png',
-  podium: '/assets/icons/87556fa5-351b-47be-8b04-7b91cb1f2b24.png',
-  rankOne: '/assets/icons/b4d34b55-7369-4ccd-872f-4f9ac0bc5b01.png',
-  rankTwo: '/assets/icons/1aa1d46e-b002-49f1-abe5-d357be1efaef.png',
-  rankThree: '/assets/icons/81179d6c-6b60-424e-8d33-32fb848f06e0.png',
-  gift: '/assets/icons/3be3a0fc-1a69-4539-bb48-d8a83d4c1320.png',
-  redemption: '/assets/icons/b9771bde-48e8-45eb-b679-bf2e6eb3dd34.png',
-} as const
+const pointsAssets = pointsPageImages
 const rankingAvatarAssets = [pointsAssets.adminAvatar, pointsAssets.rankingMale, pointsAssets.rankingMaleBlue]
 const rankingMedalAssets = [pointsAssets.rankOne, pointsAssets.rankTwo, pointsAssets.rankThree]
 

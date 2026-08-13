@@ -1,11 +1,5 @@
 import { useState } from 'react'
-
-const welcomeImages = [
-  { src: '/assets/intern-welcome-01-childrens-day.png', alt: '2026 六一儿童节快乐' },
-  { src: '/assets/intern-welcome-02-party-day.png', alt: '2026 七一建党节' },
-  { src: '/assets/intern-welcome-03-qixi.png', alt: '2026 七夕快乐' },
-  { src: '/assets/intern-welcome-04-birthday.png', alt: '2026 生日快乐' },
-]
+import { welcomeImages } from '../constants/assets'
 
 interface InternWelcomeCarouselProps {
   onComplete: () => void

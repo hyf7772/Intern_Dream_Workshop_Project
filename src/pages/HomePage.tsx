@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { BottomNavigation } from '../components/BottomNavigation'
+import { homeBackgrounds } from '../constants/assets'
 import { taskService } from '../services/taskService'
 import type { UserRole } from '../types/auth'
 import type { ModuleItem, NavigationId } from '../types/task'
@@ -10,11 +11,6 @@ interface HomePageProps {
   onOpenActivities: () => void
   onOpenPoints: () => void
   onReturnRoleSelection: () => void
-}
-
-const homeBackgrounds: Record<UserRole, string> = {
-  admin: '/home-admin.png',
-  intern: '/home-intern.png',
 }
 
 export function HomePage({ role, onOpenTasks, onOpenActivities, onOpenPoints, onReturnRoleSelection }: HomePageProps) {

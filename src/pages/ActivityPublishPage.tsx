@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { activityConfigIcons, profileAvatars, statIcons } from '../constants/assets'
+import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
 import type { ActivityPageId } from '../types/activity'
 
 interface ActivityPublishPageProps {
@@ -225,7 +225,7 @@ function ActivityPosterPreview({ onClose }: ActivityPosterPreviewProps) {
     <div className="activity-poster-backdrop" role="presentation" onClick={onClose}>
       <section className="activity-poster-modal" role="dialog" aria-modal="true" aria-label="活动海报预览" onClick={event => event.stopPropagation()}>
         <button className="poster-image-close" type="button" onClick={onClose} aria-label="关闭海报预览">×</button>
-        <img className="poster-image" src="/assets/activity-poster.png" alt="实习生入职培训活动海报" />
+        <img className="poster-image" src={activityImages.poster} alt="实习生入职培训活动海报" />
       </section>
     </div>
   )
