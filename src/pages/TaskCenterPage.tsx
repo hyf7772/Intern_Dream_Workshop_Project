@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { BottomNavigation } from '../components/BottomNavigation'
-import { MentorCard } from '../components/MentorCard'
 import { PlayerPanel } from '../components/PlayerPanel'
 import { StatsStrip } from '../components/StatsStrip'
 import { TaskRow } from '../components/TaskRow'
@@ -53,6 +52,10 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
   const getTaskStatus = (task: TaskItem) => taskStatuses[task.id] ?? task.status
 
   const handleEnroll = async (task: TaskItem) => {
+    if (getTaskStatus(task) !== 'pending') {
+      setNotice(`“${task.title}”已报名，无需重复报名`)
+      return
+    }
     setBusyTaskId(task.id)
     try {
       const result = await taskService.enrollTask(task.id)
@@ -65,6 +68,11 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
 
   const handleSubmit = async (submission: TaskSubmission) => {
     if (!submitTask) return
+    if (getTaskStatus(submitTask) !== 'in_progress') {
+      setNotice('请先报名任务，再提交材料')
+      setSubmitTask(null)
+      return
+    }
     setBusyTaskId(submitTask.id)
     try {
       const result = await taskService.submitTask(submitTask.id, submission)
@@ -102,14 +110,10 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
       <div className="task-layout">
         <TaskSidebar activePage={page.id} pages={pages} onChange={onPageChange} />
         <section className="task-content" aria-label={`${page.title}内容`}>
-          {page.mentor && <MentorCard mentor={page.mentor} onAction={setNotice} />}
-          {page.sections.map((section) => (
-            <section className="task-section" key={section.id} aria-labelledby={`${page.id}-${section.id}`}>
-              <div className="section-heading"><div><h2 id={`${page.id}-${section.id}`}>{section.title}</h2>{section.eyebrow && <p>{section.eyebrow}</p>}</div><span>{section.tasks.length}项</span></div>
-              <div className="task-list">{section.tasks.map((task) => <TaskRow key={task.id} task={task} status={getTaskStatus(task)} busy={busyTaskId === task.id} onView={setDetailTask} onEnroll={handleEnroll} onSubmit={setSubmitTask} />)}</div>
-            </section>
-          ))}
-          {page.complianceNotice && <div className="compliance-notice" role="note">{page.complianceNotice}</div>}
+          <section className="task-section" aria-labelledby={`${page.id}-tasks`}>
+            <div className="section-heading"><div><h2 id={`${page.id}-tasks`}>{page.title}</h2></div><span>{currentTasks.length}项</span></div>
+            <div className="task-list">{currentTasks.map((task) => <TaskRow key={task.id} task={task} status={getTaskStatus(task)} busy={busyTaskId === task.id} showAbility={page.id !== 'professional'} onView={setDetailTask} onEnroll={handleEnroll} onSubmit={setSubmitTask} />)}</div>
+          </section>
         </section>
       </div>
 
