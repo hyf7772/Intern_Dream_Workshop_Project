@@ -5,9 +5,11 @@ import { PlayerPanel } from '../components/PlayerPanel'
 import { StatsStrip } from '../components/StatsStrip'
 import { TaskRow } from '../components/TaskRow'
 import { TaskSidebar } from '../components/TaskSidebar'
+import { TaskDetailModal } from '../components/TaskDetailModal'
+import { TaskSubmitModal } from '../components/TaskSubmitModal'
 import { navigationIcons } from '../constants/assets'
 import { taskService } from '../services/taskService'
-import type { NavigationId, TaskItem, TaskPageConfig, TaskPageId, UserSummary } from '../types/task'
+import type { NavigationId, TaskItem, TaskPageConfig, TaskPageId, TaskStatus, TaskSubmission, UserSummary } from '../types/task'
 
 interface TaskCenterPageProps {
   pageId: TaskPageId
@@ -19,14 +21,25 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
   const [page, setPage] = useState<TaskPageConfig | null>(null)
   const [pages, setPages] = useState<Record<TaskPageId, TaskPageConfig> | null>(null)
   const [user, setUser] = useState<UserSummary | null>(null)
-  const [completedActions, setCompletedActions] = useState<Record<string, boolean>>({})
+  const [taskStatuses, setTaskStatuses] = useState<Record<string, TaskStatus>>({})
+  const [detailTask, setDetailTask] = useState<TaskItem | null>(null)
+  const [submitTask, setSubmitTask] = useState<TaskItem | null>(null)
+  const [busyTaskId, setBusyTaskId] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
 
   useEffect(() => {
     let active = true
     setPage(null)
     Promise.all([taskService.getTaskPages(), taskService.getUserSummary()]).then(([pageData, userData]) => {
-      if (active) { setPages(pageData); setPage(pageData[pageId]); setUser(userData) }
+      if (active) {
+        setPages(pageData)
+        setPage(pageData[pageId])
+        setUser(userData)
+        setTaskStatuses(current => ({
+          ...Object.fromEntries(Object.values(pageData).flatMap(taskPage => taskPage.sections.flatMap(section => section.tasks.map(task => [task.id, task.status] as const)))),
+          ...current,
+        }))
+      }
     })
     return () => { active = false }
   }, [pageId])
@@ -37,9 +50,30 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
     return () => window.clearTimeout(timeout)
   }, [notice])
 
-  const handleTaskAction = (task: TaskItem) => {
-    setCompletedActions((current) => ({ ...current, [task.id]: true }))
-    setNotice(`${task.title}：${task.actionDone || '操作成功'}`)
+  const getTaskStatus = (task: TaskItem) => taskStatuses[task.id] ?? task.status
+
+  const handleEnroll = async (task: TaskItem) => {
+    setBusyTaskId(task.id)
+    try {
+      const result = await taskService.enrollTask(task.id)
+      setTaskStatuses(current => ({ ...current, [result.taskId]: result.status }))
+      setNotice(`已报名“${task.title}”，请按要求完成并提交材料`)
+    } finally {
+      setBusyTaskId(null)
+    }
+  }
+
+  const handleSubmit = async (submission: TaskSubmission) => {
+    if (!submitTask) return
+    setBusyTaskId(submitTask.id)
+    try {
+      const result = await taskService.submitTask(submitTask.id, submission)
+      setTaskStatuses(current => ({ ...current, [result.taskId]: result.status }))
+      setNotice(`“${submitTask.title}”材料已提交，任务已完成`)
+      setSubmitTask(null)
+    } finally {
+      setBusyTaskId(null)
+    }
   }
 
   const handleNavigation = (id: NavigationId, label: string) => {
@@ -50,6 +84,9 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
 
   if (!page || !pages || !user) return <main className={`task-page task-page--${pageId}`}><div className="page-loading">正在载入任务数据…</div></main>
 
+  const currentTasks = page.sections.flatMap(section => section.tasks)
+  const displayStats = { ...page.stats, completed: currentTasks.filter(task => getTaskStatus(task) === 'completed').length, total: currentTasks.length }
+
   return (
     <main className={`task-page task-page--${page.id}`}>
       <div className="task-page__background" aria-hidden="true" />
@@ -59,7 +96,7 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
           <div><p className="task-breadcrumb">梦工场 <span>›</span> 任务中心 <span>›</span> {page.title}</p><h1>{page.title}<i aria-hidden="true">✦</i></h1><p>{page.subtitle}</p></div>
         </div>
         <PlayerPanel user={user} />
-        <StatsStrip stats={page.stats} />
+        <StatsStrip stats={displayStats} />
       </header>
 
       <div className="task-layout">
@@ -69,7 +106,7 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
           {page.sections.map((section) => (
             <section className="task-section" key={section.id} aria-labelledby={`${page.id}-${section.id}`}>
               <div className="section-heading"><div><h2 id={`${page.id}-${section.id}`}>{section.title}</h2>{section.eyebrow && <p>{section.eyebrow}</p>}</div><span>{section.tasks.length}项</span></div>
-              <div className="task-list">{section.tasks.map((task) => <TaskRow key={task.id} task={task} completed={Boolean(completedActions[task.id])} onAction={handleTaskAction} />)}</div>
+              <div className="task-list">{section.tasks.map((task) => <TaskRow key={task.id} task={task} status={getTaskStatus(task)} busy={busyTaskId === task.id} onView={setDetailTask} onEnroll={handleEnroll} onSubmit={setSubmitTask} />)}</div>
             </section>
           ))}
           {page.complianceNotice && <div className="compliance-notice" role="note">{page.complianceNotice}</div>}
@@ -78,6 +115,8 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
 
       <BottomNavigation active="tasks" onNavigate={handleNavigation} />
       {notice && <div className="task-toast" role="status" aria-live="polite">{notice}</div>}
+      {detailTask && <TaskDetailModal task={detailTask} status={getTaskStatus(detailTask)} onClose={() => setDetailTask(null)} />}
+      {submitTask && <TaskSubmitModal task={submitTask} submitting={busyTaskId === submitTask.id} onClose={() => setSubmitTask(null)} onSubmit={handleSubmit} />}
     </main>
   )
 }

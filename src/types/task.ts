@@ -1,6 +1,13 @@
 export type TaskPageId = 'newcomer' | 'mainline' | 'professional'
 
 export type NavigationId = 'home' | 'tasks' | 'growth' | 'points' | 'mine'
+export type TaskStatus = 'pending' | 'in_progress' | 'completed'
+
+export const taskStatusLabels: Record<TaskStatus, string> = {
+  pending: '待接收',
+  in_progress: '进行中',
+  completed: '已完成',
+}
 
 export interface ModuleItem {
   id: string
@@ -25,15 +32,18 @@ export interface TaskItem {
   icon: string
   title: string
   description: string
-  status?: string
+  status: TaskStatus
   progress?: number
   progressLabel?: string
   meta?: string
   reward?: number
   ability?: string
-  action: string
-  actionDone?: string
   recommended?: boolean
+}
+
+export interface TaskSubmission {
+  content: string
+  attachmentNames: string[]
 }
 
 export interface TaskSection {
