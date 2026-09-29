@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
+import { ActivityDetailModal } from '../components/ActivityDetailModal'
 import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
 import { activityOverviews } from '../mocks/activityData'
-import type { ActivityOverviewId, ActivityStatus } from '../types/activity'
+import type { ActivityItem, ActivityOverviewId, ActivityStatus } from '../types/activity'
 
 interface ActivityOverviewPageProps {
   pageId: ActivityOverviewId
@@ -11,57 +12,56 @@ interface ActivityOverviewPageProps {
   onHome: () => void
 }
 
-const statusAction: Record<ActivityStatus, string> = {
-  未发布: '发布 / 编辑',
-  报名中: '查看',
-  进行中: '查看',
-  已结束: '查看',
-}
-
 const statusClass: Record<ActivityStatus, string> = {
-  未发布: 'is-draft',
-  报名中: 'is-enrolling',
-  进行中: 'is-active',
-  已结束: 'is-ended',
+  草稿: 'is-draft',
+  已发布: 'is-published',
+  待复盘: 'is-pending-review',
+  已复盘: 'is-reviewed',
 }
+const positionTypes = ['零售岗位', '公司岗位', '运营岗位', '其他'] as const
 
 export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOpenReview, onHome }: ActivityOverviewPageProps) {
   const config = activityOverviews[pageId]
-  const [status, setStatus] = useState('')
-  const [type, setType] = useState('')
-  const [department, setDepartment] = useState('')
-  const [date, setDate] = useState('')
+  const [items, setItems] = useState<ActivityItem[]>(config.items)
+  const [status, setStatus] = useState<ActivityStatus | ''>('')
+  const [positionType, setPositionType] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
   const [query, setQuery] = useState('')
   const [page, setPage] = useState(1)
   const [notice, setNotice] = useState('')
+  const [detail, setDetail] = useState<{ activity: ActivityItem; editing: boolean } | null>(null)
   const pageSize = 5
 
-  const types = useMemo(() => Array.from(new Set(config.items.map(item => item.type))), [config])
-  const departments = useMemo(() => Array.from(new Set(config.items.map(item => item.department))), [config])
-  const filteredItems = useMemo(() => config.items.filter(item => {
+  useEffect(() => { setItems(config.items); setStatus(''); setPositionType(''); setStartDate(''); setEndDate(''); setQuery(''); setPage(1) }, [config])
+  const stats = [
+    { label: '活动总数', value: items.length, icon: activityConfigIcons.stats.weekly },
+    { label: '活动完成数', value: items.filter(item => item.status === '已复盘').length, icon: activityConfigIcons.stats.completed },
+    { label: '活动待复盘数', value: items.filter(item => item.status === '待复盘').length, icon: activityConfigIcons.stats.pendingReview },
+    { label: '活动进行中数', value: items.filter(item => item.status === '已发布').length, icon: activityConfigIcons.stats.inProgress },
+  ]
+  const filteredItems = useMemo(() => items.filter(item => {
     const normalizedQuery = query.trim().toLowerCase()
     return (!status || item.status === status)
-      && (!type || item.type === type)
-      && (!department || item.department === department)
-      && (!date || item.date === date)
-      && (!normalizedQuery || [item.name, item.publisher, item.department, item.location].join(' ').toLowerCase().includes(normalizedQuery))
-  }), [config, status, type, department, date, query])
+      && (!positionType || item.positionType === positionType)
+      && (!startDate || item.date >= startDate)
+      && (!endDate || item.date <= endDate)
+      && (!normalizedQuery || item.name.toLowerCase().includes(normalizedQuery))
+  }), [items, status, positionType, startDate, endDate, query])
 
   const pageCount = Math.max(1, Math.ceil(filteredItems.length / pageSize))
   const safePage = Math.min(page, pageCount)
   const visibleItems = filteredItems.slice((safePage - 1) * pageSize, safePage * pageSize)
 
-  useEffect(() => { setPage(1) }, [pageId, status, type, department, date, query])
+  useEffect(() => { setPage(1) }, [status, positionType, startDate, endDate, query])
   useEffect(() => {
     if (!notice) return
     const timeout = window.setTimeout(() => setNotice(''), 2200)
     return () => window.clearTimeout(timeout)
   }, [notice])
 
-  const handleAction = (activityName: string, activityStatus: ActivityStatus) => {
-    const action = activityStatus === '未发布' ? '打开发布与编辑' : '查看'
-    setNotice(`已为“${activityName}”${action}活动详情`)
-  }
+  const saveActivity = (activity: ActivityItem) => { setItems(previous => previous.map(item => item.id === activity.id ? activity : item)); setDetail(null); setNotice(`“${activity.name}”内容已保存，当前状态为草稿`) }
+  const publishActivity = (activity: ActivityItem) => { if (activity.status === '草稿') { setItems(previous => previous.map(item => item.id === activity.id ? { ...item, status: '已发布' } : item)); setNotice(`“${activity.name}”已发布`) } }
 
   return (
     <main className="activity-page">
@@ -79,7 +79,7 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
       </header>
 
       <section className="activity-stats" aria-label="活动数据概览">
-        {config.stats.map(stat => <div className="activity-stat" key={stat.label}><img className="activity-stat__icon" src={stat.icon} alt="" aria-hidden="true" /><div><span>{stat.label}</span><strong>{stat.value}</strong></div></div>)}
+        {stats.map(stat => <div className="activity-stat" key={stat.label}><img className="activity-stat__icon" src={stat.icon} alt="" aria-hidden="true" /><div><span>{stat.label}</span><strong>{stat.value}</strong></div></div>)}
       </section>
 
       <section className="activity-workspace">
@@ -96,38 +96,36 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
 
         <section className="activity-content">
           <div className="activity-filters" aria-label="活动筛选条件">
-            <select aria-label="按状态搜索" value={status} onChange={event => setStatus(event.target.value)}><option value="">按状态搜索</option>{(['未发布', '报名中', '进行中', '已结束'] as ActivityStatus[]).map(item => <option key={item}>{item}</option>)}</select>
-            <select aria-label="按活动类型搜索" value={type} onChange={event => setType(event.target.value)}><option value="">按活动类型搜索</option>{types.map(item => <option key={item}>{item}</option>)}</select>
-            <select aria-label="按所属部门搜索" value={department} onChange={event => setDepartment(event.target.value)}><option value="">按所属部门搜索</option>{departments.map(item => <option key={item}>{item}</option>)}</select>
-            <label className="activity-date"><span>搜索</span><input type="date" aria-label="按时间搜索" value={date} onChange={event => setDate(event.target.value)} /></label>
-            <label className="activity-query"><input value={query} onChange={event => setQuery(event.target.value)} placeholder="任意输入搜索活动名称/地点" aria-label="任意输入搜索" /><span aria-hidden="true">⌕</span></label>
+            <select aria-label="按活动状态搜索" value={status} onChange={event => setStatus(event.target.value as ActivityStatus | '')}><option value="">按活动状态搜索</option>{(['草稿', '已发布', '待复盘', '已复盘'] as ActivityStatus[]).map(item => <option key={item}>{item}</option>)}</select>
+            {pageId === 'professional' && <select aria-label="按所属岗位类型搜索" value={positionType} onChange={event => setPositionType(event.target.value)}><option value="">按所属岗位类型搜索</option>{positionTypes.map(item => <option key={item}>{item}</option>)}</select>}
+            <label className="activity-date-range"><span>活动日期</span><input type="date" aria-label="开始日期" value={startDate} onChange={event => setStartDate(event.target.value)} /><b>至</b><input type="date" aria-label="结束日期" value={endDate} onChange={event => setEndDate(event.target.value)} /></label>
+            <label className="activity-query"><input value={query} onChange={event => setQuery(event.target.value)} placeholder="输入活动名称搜索" aria-label="按活动名称搜索" /><span aria-hidden="true">⌕</span></label>
           </div>
 
-          <div className="activity-list-heading"><h2>活动总览</h2><span>支持分页查询</span></div>
+          <div className="activity-list-heading"><h2>活动总览</h2><span>共 {filteredItems.length} 项</span></div>
           <section className="activity-table-wrap" aria-label="活动列表">
             <div className="activity-table-scroll">
               <table className="activity-table">
-                <thead><tr><th>活动名称</th><th>发布人/部门</th><th>时间</th><th>地点</th><th>报名人数</th><th>星愿值</th><th>任务状态</th><th>操作</th></tr></thead>
+                <thead><tr><th>活动名称</th><th>活动日期</th><th>地点</th><th>星原值</th><th>任务状态</th><th>操作</th></tr></thead>
                 <tbody>
                   {visibleItems.map(item => <tr key={item.id}>
-                    <td><span className="activity-row-icon" aria-hidden="true">{item.icon}</span><div><strong>{item.name}</strong><small>{item.type}</small></div></td>
-                    <td>{item.publisher} / {item.department}</td>
+                    <td><span className="activity-row-icon" aria-hidden="true">{item.icon}</span><div><strong>{item.name}</strong><small>{pageId === 'professional' ? item.positionType : item.type}</small></div></td>
                     <td><time dateTime={item.date}>{item.date}<br />{item.time}</time></td>
                     <td>{item.location}</td>
-                    <td>{item.enrollment}</td>
                     <td><img className="activity-stars" src={statIcons.stars} alt="" aria-hidden="true" /> {item.stars}</td>
                     <td><span className={`activity-status ${statusClass[item.status]}`}>{item.status}</span></td>
-                    <td><button type="button" className="activity-row-action" onClick={() => handleAction(item.name, item.status)}>{statusAction[item.status]}</button></td>
+                    <td><div className="activity-row-actions"><button type="button" className="activity-row-action is-secondary" onClick={() => setDetail({ activity: item, editing: false })}>查看</button><button type="button" className="activity-row-action is-secondary" onClick={() => setDetail({ activity: item, editing: true })}>编辑</button><button type="button" className="activity-row-action is-primary" disabled={item.status !== '草稿'} onClick={() => publishActivity(item)}>发布</button></div></td>
                   </tr>)}
-                  {!visibleItems.length && <tr><td className="activity-table__empty" colSpan={8}>没有匹配的活动，请调整筛选条件</td></tr>}
+                  {!visibleItems.length && <tr><td className="activity-table__empty" colSpan={6}>没有匹配的活动，请调整筛选条件</td></tr>}
                 </tbody>
               </table>
             </div>
-            <footer className="activity-pagination"><span>共 {filteredItems.length} 条</span><div><button type="button" disabled={safePage === 1} onClick={() => setPage(safePage - 1)} aria-label="上一页">‹</button>{Array.from({ length: pageCount }, (_, index) => index + 1).map(number => <button type="button" className={number === safePage ? 'is-current' : ''} key={number} onClick={() => setPage(number)}>{number}</button>)}<button type="button" disabled={safePage === pageCount} onClick={() => setPage(safePage + 1)} aria-label="下一页">›</button></div><label>5条/页 <span>⌄</span></label></footer>
+            <footer className="activity-pagination"><span>共 {filteredItems.length} 条</span><div><button type="button" disabled={safePage === 1} onClick={() => setPage(safePage - 1)} aria-label="上一页">‹</button>{Array.from({ length: pageCount }, (_, index) => index + 1).map(number => <button type="button" className={number === safePage ? 'is-current' : ''} key={number} onClick={() => setPage(number)}>{number}</button>)}<button type="button" disabled={safePage === pageCount} onClick={() => setPage(safePage + 1)} aria-label="下一页">›</button></div></footer>
           </section>
         </section>
       </section>
       {notice && <div className="activity-toast" role="status">{notice}</div>}
+      {detail && <ActivityDetailModal activity={detail.activity} editing={detail.editing} onClose={() => setDetail(null)} onEdit={() => setDetail(previous => previous ? { ...previous, editing: true } : previous)} onSave={saveActivity} />}
     </main>
   )
 }
