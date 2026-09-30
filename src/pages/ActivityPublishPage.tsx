@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
-import type { ActivityPageId } from '../types/activity'
+import type { ActivityItem, ActivityPageId } from '../types/activity'
 
 interface ActivityPublishPageProps {
   onPageChange: (pageId: ActivityPageId) => void
@@ -9,14 +9,20 @@ interface ActivityPublishPageProps {
 
 interface PublishForm {
   name: string
-  type: string
-  date: string
+  type: '新手任务' | '主线任务' | '专业任务'
+  positionType: '零售岗位' | '公司岗位' | '运营岗位' | '其他' | ''
+  startDate: string
+  endDate: string
   start: string
   end: string
   location: string
+  enrollmentLimit: string
   stars: string
-  participants: string
+  participants: '所有人' | '零售条线' | '批发条线' | '自定义'
+  required: boolean
   content: string
+  requirementsText: string
+  icon: string
 }
 
 interface PublishAttachment {
@@ -26,30 +32,10 @@ interface PublishAttachment {
 }
 
 const initialForm: PublishForm = {
-  name: '实习生入职培训',
-  type: '通用活动',
-  date: '2026-08-12',
-  start: '09:00',
-  end: '17:00',
-  location: '分行4F会议室',
-  stars: '60',
-  participants: '2026届实习生 / 全员可报名',
-  content: `培训为期一天。99名暑期实习生分为6组，每组16-17人（湛江、清远、花都、从化、增城等地实习生可自愿选择是否参加）。
-
-09:30-10:00      开班仪式  
-10:00-11:00      员工职业发展            
-11:10-12:00      招商银行企业文化          
-12:10-12:30      交流答疑
-12:30-14:00      午餐、午休
-14:20-15:20      招商银行公司金融体系     
-15:10-16:00      招商银行零售金融体系       
-16:10-17:00      消费者权益保护相关课程   `,
+  name: '', type: '主线任务', positionType: '其他', startDate: '', endDate: '', start: '09:00', end: '17:00', location: '', enrollmentLimit: '50', stars: '30', participants: '所有人', required: false, content: '', requirementsText: '', icon: '📌',
 }
 
-const initialAttachments: PublishAttachment[] = [
-  { name: '培训安排.pdf', size: '1.24 MB', kind: 'pdf' },
-  { name: '签到说明.docx', size: '312 KB', kind: 'doc' },
-]
+const initialAttachments: PublishAttachment[] = []
 
 const smartGroups = [
   { name: '第一组', count: 12, members: ['李明', '王欣', '周宁'], tone: 'mint' },
@@ -72,8 +58,7 @@ const attachmentIcon: Record<PublishAttachment['kind'], string> = {
 
 export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPageProps) {
   const [form, setForm] = useState<PublishForm>(initialForm)
-  const [requirements, setRequirements] = useState(['签到', '学习反馈', '现场互动', '附件上传'])
-  const [customRequirement, setCustomRequirement] = useState('')
+  const [requirementsText, setRequirementsText] = useState('')
   const [attachments, setAttachments] = useState<PublishAttachment[]>(initialAttachments)
   const [groupMode, setGroupMode] = useState<'smart' | 'manual'>('smart')
   const [groupRule, setGroupRule] = useState('按岗位')
@@ -94,13 +79,6 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
     setForm(previous => ({ ...previous, [key]: value }))
   }
 
-  const addRequirement = () => {
-    const value = customRequirement.trim()
-    if (!value || requirements.includes(value)) return
-    setRequirements(previous => [...previous, value])
-    setCustomRequirement('')
-  }
-
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? [])
     if (!files.length) return
@@ -116,17 +94,40 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
     event.target.value = ''
   }
 
-  const saveDraft = () => setNotice('活动草稿已保存，可稍后继续配置')
+  const handleIconUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => updateField('icon', String(reader.result))
+    reader.readAsDataURL(file)
+    event.target.value = ''
+  }
+
+  const saveDraft = () => {
+    if (!form.name.trim() || !form.startDate || !form.endDate || !form.content.trim() || !requirementsText.trim()) {
+      setNotice('请先完善活动名称、活动时间、活动内容和活动要求')
+      return
+    }
+    if (form.endDate < form.startDate) { setNotice('结束日期不能早于开始日期'); return }
+    const draft: ActivityItem = {
+      id: `draft-${Date.now()}`, name: form.name.trim(), type: form.type, publisher: '阳洁', department: '人力资源部', date: form.startDate,
+      time: `${form.start} ~ ${form.end}`, location: form.location.trim() || '待定', enrollment: `0/${form.enrollmentLimit || '0'}`,
+      stars: Number(form.stars) || 0, status: '草稿', icon: form.icon, positionType: form.type === '专业任务' && form.positionType ? form.positionType : undefined,
+      participants: form.participants, content: form.content.trim(), requirements: [requirementsText.trim()], attachments: attachments.map(item => item.name), overview: form.type === '专业任务' ? 'professional' : 'general',
+    }
+    try {
+      const previous = JSON.parse(window.localStorage.getItem('dream-factory-activity-drafts') ?? '[]') as ActivityItem[]
+      window.localStorage.setItem('dream-factory-activity-drafts', JSON.stringify([...previous, draft]))
+    } catch { /* 本地存储不可用时仍完成表单反馈 */ }
+    setNotice('活动草稿保存成功')
+    setForm(initialForm)
+    setRequirementsText('')
+    setAttachments([])
+  }
 
   const generatePoster = () => setShowPoster(true)
 
-  const publishActivity = () => {
-    if (!form.name.trim() || !form.date || !form.location.trim() || !form.content.trim()) {
-      setNotice('请先完善活动名称、时间、地点和活动内容')
-      return
-    }
-    setNotice(`“${form.name}”已发布，${totalPeople} 位实习生将收到活动通知`)
-  }
+  const publishActivity = () => undefined
 
   return (
     <main className="activity-builder-page">
@@ -166,22 +167,24 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
             <div className="builder-section-heading"><b>A</b><div><h2>基本信息</h2><p>完善活动的基础资料和参与范围</p></div></div>
             <div className="builder-form-grid builder-basic-grid">
               <label className="builder-field builder-field-wide"><span>活动名称 <em>*</em></span><input value={form.name} onChange={event => updateField('name', event.target.value)} placeholder="请输入活动名称" /></label>
-              <label className="builder-field"><span>活动类型 <em>*</em></span><select value={form.type} onChange={event => updateField('type', event.target.value)}><option>通用活动</option><option>专业实践</option><option>成长培训</option><option>团队共创</option></select></label>
-              <label className="builder-field builder-field-date"><span>活动时间 <em>*</em></span><div className="builder-time-fields"><input type="date" value={form.date} onChange={event => updateField('date', event.target.value)} /><input type="time" value={form.start} onChange={event => updateField('start', event.target.value)} /><i>—</i><input type="time" value={form.end} onChange={event => updateField('end', event.target.value)} /></div></label>
-              <label className="builder-field"><span>活动地点 <em>*</em></span><input value={form.location} onChange={event => updateField('location', event.target.value)} placeholder="如：分行4F会议室" /></label>
-              <label className="builder-field builder-field-stars"><span>星愿值 <em>*</em></span><div className="builder-number-input"><img src={statIcons.stars} alt="" aria-hidden="true" /><input type="number" min="1" max="200" value={form.stars} onChange={event => updateField('stars', event.target.value)} /><span>分</span></div></label>
-              <label className="builder-field builder-field-participants"><span>参与人员 <em>*</em></span><select value={form.participants} onChange={event => updateField('participants', event.target.value)}><option>2026届实习生 / 全员可报名</option><option>2026届实习生 / 数字化方向</option><option>人力资源部 / 指定成员</option></select></label>
+              <label className="builder-field"><span>活动类型 <em>*</em></span><select value={form.type} onChange={event => { const type = event.target.value as PublishForm['type']; updateField('type', type); if (type !== '专业任务') updateField('positionType', '') }}><option>新手任务</option><option>主线任务</option><option>专业任务</option></select></label>
+              <label className="builder-field"><span>岗位类型 <em>*</em></span><select className={form.type !== '专业任务' ? 'is-disabled' : ''} disabled={form.type !== '专业任务'} value={form.type === '专业任务' ? form.positionType : ''} onChange={event => updateField('positionType', event.target.value as PublishForm['positionType'])}><option value="">请选择岗位类型</option><option>零售岗位</option><option>公司岗位</option><option>运营岗位</option><option>其他</option></select></label>
+              <label className="builder-field builder-field-date"><span>活动时间 <em>*</em></span><div className="builder-time-fields"><input type="date" value={form.startDate} onChange={event => updateField('startDate', event.target.value)} /><input type="time" value={form.start} onChange={event => updateField('start', event.target.value)} /><i>至</i><input type="date" value={form.endDate} onChange={event => updateField('endDate', event.target.value)} /><input type="time" value={form.end} onChange={event => updateField('end', event.target.value)} /></div></label>
+              <label className="builder-field"><span>活动地点</span><input value={form.location} onChange={event => updateField('location', event.target.value)} placeholder="活动地点（选填）" /></label>
+              <label className="builder-field"><span>报名人数上限 <em>*</em></span><input className={form.required ? 'is-disabled' : ''} type="number" min="1" value={form.enrollmentLimit} disabled={form.required} onChange={event => updateField('enrollmentLimit', event.target.value)} placeholder="请输入人数" /></label>
+              <label className="builder-field builder-field-stars"><span>星愿值 <em>*</em></span><div className="builder-number-input"><img src={statIcons.stars} alt="" aria-hidden="true" /><input type="number" min="0" value={form.stars} onChange={event => updateField('stars', event.target.value)} /><span>分</span></div></label>
+              <label className="builder-field builder-field-participants"><span>参与人员 <em>*</em></span><select value={form.participants} onChange={event => updateField('participants', event.target.value as PublishForm['participants'])}><option>所有人</option><option>零售条线</option><option>批发条线</option><option>自定义</option></select></label>
+              <div className="builder-field"><span>活动图标</span><label className="builder-icon-upload"><input type="file" accept="image/*" onChange={handleIconUpload} /><span>＋</span><strong>上传图标</strong></label></div>
+              <label className="builder-required-toggle"><input type="checkbox" checked={form.required} onChange={event => { const checked = event.target.checked; updateField('required', checked); updateField('enrollmentLimit', checked ? '' : '50') }} /><span>活动必须参加</span><small>勾选后报名人数不可设置</small></label>
             </div>
           </div>
 
           <div className="builder-card builder-content-card">
             <div className="builder-section-heading"><b>B</b><div><h2>活动内容与要求</h2><p>告诉实习生要完成什么，以及如何获得星愿值</p></div></div>
             <div className="builder-content-grid">
-              <label className="builder-field builder-textarea-field"><span>活动内容描述 <em>*</em></span><textarea maxLength={300} value={form.content} onChange={event => updateField('content', event.target.value)} /><small>{form.content.length}/300</small></label>
+              <label className="builder-field builder-textarea-field"><span>活动内容描述 <em>*</em></span><textarea maxLength={500} value={form.content} onChange={event => updateField('content', event.target.value)} placeholder="请输入活动内容描述" /><small>{form.content.length}/500</small></label>
               <div className="builder-requirements">
-                <span className="builder-field-label">活动要求 <em>*</em></span>
-                <div className="requirement-list">{requirements.map(requirement => <button className="requirement-chip is-checked" type="button" key={requirement} onClick={() => setRequirements(previous => previous.filter(item => item !== requirement))}><span>✓</span>{requirement}</button>)}<button className="requirement-chip is-add" type="button" onClick={() => document.getElementById('custom-requirement')?.focus()}><span>＋</span> 添加要求</button></div>
-                <div className="requirement-add-row"><input id="custom-requirement" value={customRequirement} onChange={event => setCustomRequirement(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') addRequirement() }} placeholder="输入自定义要求后回车" /><button type="button" onClick={addRequirement}>添加</button></div>
+                <label className="builder-field"><span>活动要求 <em>*</em></span><textarea maxLength={300} value={requirementsText} onChange={event => setRequirementsText(event.target.value)} placeholder="请输入活动具体要求" /></label>
                 <span className="builder-field-label attachment-label">附件资料</span>
                 <label className="upload-dropzone"><input type="file" multiple accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip" onChange={handleUpload} /><span className="upload-cloud" aria-hidden="true"></span><strong>点击上传</strong><small>支持 PDF、DOC、PPT、XLSX，单个文件≤50MB</small></label>
                 <div className="attachment-list">{attachments.map((attachment, index) => <div className={`attachment-item is-${attachment.kind}`} key={`${attachment.name}-${index}`}><span className="attachment-type">{attachmentIcon[attachment.kind]}</span><div><strong>{attachment.name}</strong><small>{attachment.size}</small></div><button type="button" onClick={() => setAttachments(previous => previous.filter((_, itemIndex) => itemIndex !== index))} aria-label={`移除${attachment.name}`}>×</button></div>)}</div>
@@ -205,7 +208,7 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
             </div>
           </div>
 
-          <footer className="builder-footer-actions"><button className="builder-button is-cancel" type="button" onClick={onHome}>取消</button><button className="builder-button is-outline" type="button" onClick={saveDraft}>保存草稿</button><button className="builder-button is-outline" type="button" onClick={() => setNotice('预览已打开，当前活动尚未正式发布')}>预览活动</button><button className="builder-button is-poster" type="button" onClick={generatePoster}>生成活动海报</button><button className="builder-button is-primary" type="button" onClick={publishActivity}> 发布活动</button></footer>
+          <footer className="builder-footer-actions"><button className="builder-button is-primary" type="button" onClick={saveDraft}>保存为草稿</button></footer>
         </section>
       </section>
 

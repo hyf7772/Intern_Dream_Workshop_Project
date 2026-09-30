@@ -19,10 +19,20 @@ const statusClass: Record<ActivityStatus, string> = {
   已复盘: 'is-reviewed',
 }
 const positionTypes = ['零售岗位', '公司岗位', '运营岗位', '其他'] as const
+const draftStorageKey = 'dream-factory-activity-drafts'
+
+const loadDrafts = (overview: ActivityOverviewId): ActivityItem[] => {
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(draftStorageKey) ?? '[]') as ActivityItem[]
+    return stored.filter(item => (item.overview ?? 'general') === overview)
+  } catch {
+    return []
+  }
+}
 
 export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOpenReview, onHome }: ActivityOverviewPageProps) {
   const config = activityOverviews[pageId]
-  const [items, setItems] = useState<ActivityItem[]>(config.items)
+  const [items, setItems] = useState<ActivityItem[]>(() => [...config.items, ...loadDrafts(pageId)])
   const [status, setStatus] = useState<ActivityStatus | ''>('')
   const [positionType, setPositionType] = useState('')
   const [startDate, setStartDate] = useState('')
@@ -33,7 +43,7 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
   const [detail, setDetail] = useState<{ activity: ActivityItem; editing: boolean } | null>(null)
   const pageSize = 5
 
-  useEffect(() => { setItems(config.items); setStatus(''); setPositionType(''); setStartDate(''); setEndDate(''); setQuery(''); setPage(1) }, [config])
+  useEffect(() => { setItems([...config.items, ...loadDrafts(pageId)]); setStatus(''); setPositionType(''); setStartDate(''); setEndDate(''); setQuery(''); setPage(1) }, [config, pageId])
   const stats = [
     { label: '活动总数', value: items.length, icon: activityConfigIcons.stats.weekly },
     { label: '活动完成数', value: items.filter(item => item.status === '已复盘').length, icon: activityConfigIcons.stats.completed },
@@ -109,7 +119,7 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
                 <thead><tr><th>活动名称</th><th>活动日期</th><th>地点</th><th>星原值</th><th>任务状态</th><th>操作</th></tr></thead>
                 <tbody>
                   {visibleItems.map(item => <tr key={item.id}>
-                    <td><span className="activity-row-icon" aria-hidden="true">{item.icon}</span><div><strong>{item.name}</strong><small>{pageId === 'professional' ? item.positionType : item.type}</small></div></td>
+                    <td><span className="activity-row-icon" aria-hidden="true">{item.icon.startsWith('data:') ? <img src={item.icon} alt="" /> : item.icon}</span><div><strong>{item.name}</strong><small>{pageId === 'professional' ? item.positionType : item.type}</small></div></td>
                     <td><time dateTime={item.date}>{item.date}<br />{item.time}</time></td>
                     <td>{item.location}</td>
                     <td><img className="activity-stars" src={statIcons.stars} alt="" aria-hidden="true" /> {item.stars}</td>
