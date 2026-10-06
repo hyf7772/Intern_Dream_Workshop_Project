@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { pointsPageImages } from '../constants/assets'
-import { initialGifts, initialRedemptionRecords, rankingMembers } from '../mocks/pointsData'
-import type { GiftItem, GiftStatus, PointsPageId, PointsPeriod, RedemptionRecord } from '../types/points'
+import { pointsService } from '../services/pointsService'
+import type { GiftItem, GiftStatus, PointsPageId, PointsPeriod, RankingMember, RedemptionRecord } from '../types/points'
 
 interface PointsPageProps {
   pageId: PointsPageId
@@ -26,7 +26,7 @@ const rankingAvatarAssets = [pointsAssets.adminAvatar, pointsAssets.rankingMale,
 const rankingMedalAssets = [pointsAssets.rankOne, pointsAssets.rankTwo, pointsAssets.rankThree]
 
 const formatNumber = (value: number) => value.toLocaleString('zh-CN')
-const getPeriodScore = (member: typeof rankingMembers[number], period: PointsPeriod) => member[periodField[period]]
+const getPeriodScore = (member: RankingMember, period: PointsPeriod) => member[periodField[period]]
 
 function GiftImage({ image, name, large = false }: { image?: string; name: string; large?: boolean }) {
   return (
@@ -87,6 +87,7 @@ export function PointsPage({ pageId, onPageChange, onHome }: PointsPageProps) {
 }
 
 function RankingModule({ onNotice }: { onNotice: (message: string) => void }) {
+  const [rankingMembers] = useState(() => pointsService.getRankingMembers())
   const [period, setPeriod] = useState<PointsPeriod>('month')
   const [department, setDepartment] = useState('全部部门')
   const [position, setPosition] = useState('全部岗位')
@@ -118,7 +119,7 @@ function RankingModule({ onNotice }: { onNotice: (message: string) => void }) {
 }
 
 function GiftModule({ onNotice }: { onNotice: (message: string) => void }) {
-  const [gifts, setGifts] = useState<GiftItem[]>(initialGifts)
+  const [gifts, setGifts] = useState<GiftItem[]>(() => pointsService.getGifts())
   const [status, setStatus] = useState('全部状态')
   const [category, setCategory] = useState('全部分类')
   const [stock, setStock] = useState('全部库存')
@@ -140,15 +141,15 @@ function GiftModule({ onNotice }: { onNotice: (message: string) => void }) {
     const name = draft.name.trim()
     if (!name || Number(draft.points) <= 0 || Number(draft.stock) < 0) { onNotice('请完善商品名称、星愿值和库存'); return }
     if (editingId) {
-      setGifts(previous => previous.map(gift => gift.id === editingId ? { ...gift, name, points: Number(draft.points), stock: Number(draft.stock), category: draft.category, status: draft.status } : gift))
+      setGifts(previous => previous.map(gift => gift.id === editingId ? pointsService.updateGift(gift, { name, points: Number(draft.points), stock: Number(draft.stock), category: draft.category, status: draft.status }) : gift))
       onNotice(`“${name}”已更新`)
     } else {
-      setGifts(previous => [...previous, { id: `g-${Date.now()}`, name, points: Number(draft.points), stock: Number(draft.stock), category: draft.category, status: draft.status }])
+      setGifts(previous => [...previous, pointsService.createGift({ name, points: Number(draft.points), stock: Number(draft.stock), category: draft.category, status: draft.status })])
       onNotice(`“${name}”已添加`)
     }
     setShowEditor(false)
   }
-  const deleteGift = (gift: GiftItem) => { setGifts(previous => previous.filter(item => item.id !== gift.id)); onNotice(`“${gift.name}”已删除`) }
+  const deleteGift = (gift: GiftItem) => { setGifts(previous => pointsService.removeGift(previous, gift.id)); onNotice(`“${gift.name}”已删除`) }
 
   return (
     <section className="points-module gifts-module">
@@ -163,16 +164,16 @@ function GiftModule({ onNotice }: { onNotice: (message: string) => void }) {
 }
 
 function RedemptionModule({ onNotice }: { onNotice: (message: string) => void }) {
-  const [records, setRecords] = useState<RedemptionRecord[]>(initialRedemptionRecords)
+  const [records, setRecords] = useState<RedemptionRecord[]>(() => pointsService.getRedemptionRecords())
   const [giftFilter, setGiftFilter] = useState('全部礼品')
   const [status, setStatus] = useState('全部状态')
   const [query, setQuery] = useState('')
-  const [selectedId, setSelectedId] = useState(initialRedemptionRecords[0].id)
+  const [selectedId, setSelectedId] = useState(() => pointsService.getRedemptionRecords()[0]?.id ?? '')
   const filtered = records.filter(record => (giftFilter === '全部礼品' || record.giftName === giftFilter) && (status === '全部状态' || record.status === status) && (!query.trim() || record.giftName.includes(query.trim())))
   const selected = filtered.find(record => record.id === selectedId) ?? filtered[0] ?? records[0]
   const pendingTotal = records.reduce((total, record) => total + record.redeemedCount - record.issuedCount, 0)
   const markIssued = (record: RedemptionRecord) => {
-    setRecords(previous => previous.map(item => item.id === record.id ? { ...item, issuedCount: item.redeemedCount, status: '已发放', recipients: item.recipients.map(recipient => ({ ...recipient, issued: true })) } : item))
+    setRecords(previous => previous.map(item => item.id === record.id ? pointsService.markRedemptionIssued(item) : item))
     onNotice(`“${record.giftName}”已全部标记为已发放`)
   }
 

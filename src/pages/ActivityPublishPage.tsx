@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
+import { activityService } from '../services/activityService'
 import type { ActivityItem, ActivityPageId } from '../types/activity'
 
 interface ActivityPublishPageProps {
@@ -115,10 +116,7 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
       stars: Number(form.stars) || 0, status: '草稿', icon: form.icon, positionType: form.type === '专业任务' && form.positionType ? form.positionType : undefined,
       participants: form.participants, content: form.content.trim(), requirements: [requirementsText.trim()], attachments: attachments.map(item => item.name), overview: form.type === '专业任务' ? 'professional' : 'general',
     }
-    try {
-      const previous = JSON.parse(window.localStorage.getItem('dream-factory-activity-drafts') ?? '[]') as ActivityItem[]
-      window.localStorage.setItem('dream-factory-activity-drafts', JSON.stringify([...previous, draft]))
-    } catch { /* 本地存储不可用时仍完成表单反馈 */ }
+    activityService.saveDraft(draft)
     setNotice('活动草稿保存成功')
     setForm(initialForm)
     setRequirementsText('')

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ActivityDetailModal } from '../components/ActivityDetailModal'
 import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
-import { activityOverviews } from '../mocks/activityData'
+import { activityService } from '../services/activityService'
 import type { ActivityItem, ActivityOverviewId, ActivityStatus } from '../types/activity'
 
 interface ActivityOverviewPageProps {
@@ -20,7 +20,6 @@ const statusClass: Record<ActivityStatus, string> = {
   已复盘: 'is-reviewed',
 }
 const positionTypes = ['零售岗位', '公司岗位', '运营岗位', '其他'] as const
-const draftStorageKey = 'dream-factory-activity-drafts'
 
 const formatActivityDate = (value: string) => value ? value.replace(/-/g, '/') : 'yyyy/mm/dd'
 
@@ -28,18 +27,9 @@ function ActivityDateField({ value, onChange, ariaLabel }: { value: string; onCh
   return <span className="activity-date-control"><span aria-hidden="true">{formatActivityDate(value)}</span><span className="activity-date-control__icon" aria-hidden="true">▦</span><input type="date" value={value} onChange={event => onChange(event.target.value)} aria-label={ariaLabel} /></span>
 }
 
-const loadDrafts = (overview: ActivityOverviewId): ActivityItem[] => {
-  try {
-    const stored = JSON.parse(window.localStorage.getItem(draftStorageKey) ?? '[]') as ActivityItem[]
-    return stored.filter(item => (item.overview ?? 'general') === overview)
-  } catch {
-    return []
-  }
-}
-
 export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOpenReview, onOpenProfessionalReview, onHome }: ActivityOverviewPageProps) {
-  const config = activityOverviews[pageId]
-  const [items, setItems] = useState<ActivityItem[]>(() => [...config.items, ...loadDrafts(pageId)])
+  const config = activityService.getOverview(pageId)
+  const [items, setItems] = useState<ActivityItem[]>(() => activityService.getOverviewItems(pageId))
   const [status, setStatus] = useState<ActivityStatus | ''>('')
   const [positionType, setPositionType] = useState('')
   const [startDate, setStartDate] = useState('')
@@ -50,7 +40,7 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
   const [detail, setDetail] = useState<{ activity: ActivityItem; editing: boolean } | null>(null)
   const pageSize = 5
 
-  useEffect(() => { setItems([...config.items, ...loadDrafts(pageId)]); setStatus(''); setPositionType(''); setStartDate(''); setEndDate(''); setQuery(''); setPage(1) }, [config, pageId])
+  useEffect(() => { setItems(activityService.getOverviewItems(pageId)); setStatus(''); setPositionType(''); setStartDate(''); setEndDate(''); setQuery(''); setPage(1) }, [pageId])
   const stats = [
     { label: '活动总数', value: items.length, icon: activityConfigIcons.stats.weekly },
     { label: '活动完成数', value: items.filter(item => item.status === '已复盘').length, icon: activityConfigIcons.stats.completed },
@@ -77,8 +67,8 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
     return () => window.clearTimeout(timeout)
   }, [notice])
 
-  const saveActivity = (activity: ActivityItem) => { setItems(previous => previous.map(item => item.id === activity.id ? activity : item)); setDetail(null); setNotice(`“${activity.name}”内容已保存，当前状态为草稿`) }
-  const publishActivity = (activity: ActivityItem) => { if (activity.status === '草稿') { setItems(previous => previous.map(item => item.id === activity.id ? { ...item, status: '已发布' } : item)); setNotice(`“${activity.name}”已发布`) } }
+  const saveActivity = (activity: ActivityItem) => { const saved = activityService.updateActivity(activity); setItems(previous => previous.map(item => item.id === saved.id ? saved : item)); setDetail(null); setNotice(`“${activity.name}”内容已保存，当前状态为草稿`) }
+  const publishActivity = (activity: ActivityItem) => { if (activity.status === '草稿') { const published = activityService.publishActivity(activity); setItems(previous => previous.map(item => item.id === published.id ? published : item)); setNotice(`“${activity.name}”已发布`) } }
 
   return (
     <main className="activity-page">

@@ -31,3 +31,30 @@ export interface ActivityOverviewConfig {
   stats: Array<{ label: string; value: number; icon: string }>
   items: ActivityItem[]
 }
+
+export interface ReviewActivity {
+  id: string
+  name: string
+  type: string
+  publisher: string
+  department: string
+  date: string
+  time: string
+  location: string
+  submitted: number
+  participants: number
+  points: number
+  average: number
+  reviewStatus: '待复盘' | '已结束'
+  icon: string
+  files: string[]
+  positionType?: '零售岗位' | '公司岗位' | '运营岗位' | '其他'
+}
+
+export interface SubmittedMember {
+  name: string
+  initials: string
+  tags: string[]
+  time: string
+  tone: string
+}
