@@ -3,6 +3,8 @@ import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '
 import type { ActivityPageId } from '../types/activity'
 
 interface ActivityReviewPageProps {
+  mode: 'general' | 'professional'
+  onModeChange: (mode: 'general' | 'professional') => void
   onPageChange: (pageId: ActivityPageId) => void
   onHome: () => void
 }
@@ -23,15 +25,16 @@ interface ReviewActivity {
   reviewStatus: '待复盘' | '已结束'
   icon: string
   files: string[]
+  positionType?: '零售岗位' | '公司岗位' | '运营岗位' | '其他'
 }
 
 const endedActivities: ReviewActivity[] = [
-  { id: 'orientation', name: '实习生入职培训', type: '成长培训', publisher: '孙浩哲', department: '人力资源部', date: '2026-08-12', time: '09:00 ~ 17:00', location: '分行4F会议室', submitted: 120, participants: 120, points: 0, average: 60, reviewStatus: '待复盘', icon: '📖', files: ['签到记录.xlsx', '培训反馈汇总.pdf', '活动照片.zip'] },
-  { id: 'forum', name: '实习生座谈会', type: '交流座谈', publisher: '阳洁', department: '人力资源部', date: '2026-08-10', time: '14:00 ~ 16:00', location: '多功能会议厅', submitted: 40, participants: 40, points: 1600, average: 40, reviewStatus: '已结束', icon: '👥', files: ['座谈纪要.xlsx', '现场照片.zip'] },
-  { id: 'company-walk', name: '喵厂 company walk', type: '文化体验', publisher: '李然', department: '人力资源部', date: '2026-08-06', time: '15:00 ~ 16:30', location: '园区主要路线', submitted: 51, participants: 51, points: 1530, average: 30, reviewStatus: '已结束', icon: '🐾', files: ['路线说明.pdf', '活动照片.zip'] },
-  { id: 'report', name: '结业汇报', type: '成果展示', publisher: '朱彦绮', department: '人力资源部', date: '2026-08-16', time: '13:30 ~ 17:00', location: '演讲厅 B 区', submitted: 64, participants: 64, points: 3840, average: 60, reviewStatus: '已结束', icon: '📊', files: ['汇报评分表.xlsx', '优秀作品集.pdf'] },
-  { id: 'basketball', name: '梦工场篮球活动赛', type: '文体活动', publisher: '朱彦绮', department: '人力资源部', date: '2026-08-18', time: '19:00 ~ 21:00', location: '园区篮球场', submitted: 80, participants: 80, points: 4800, average: 60, reviewStatus: '已结束', icon: '🏀', files: ['赛程记录.xlsx', '活动照片.zip'] },
-  { id: 'sharing', name: '行业分享会', type: '经验交流', publisher: '周诗', department: '市场拓展部', date: '2026-08-05', time: '14:00 ~ 16:00', location: '培训室 B', submitted: 68, participants: 68, points: 2720, average: 40, reviewStatus: '已结束', icon: '💬', files: ['分享资料.pdf', '签到记录.xlsx'] },
+  { id: 'orientation', name: '实习生入职培训', type: '成长培训', publisher: '孙浩哲', department: '人力资源部', date: '2026-08-12', time: '09:00 ~ 17:00', location: '分行4F会议室', submitted: 120, participants: 120, points: 0, average: 60, reviewStatus: '待复盘', icon: '📖', files: ['签到记录.xlsx', '培训反馈汇总.pdf', '活动照片.zip'], positionType: '运营岗位' },
+  { id: 'forum', name: '实习生座谈会', type: '交流座谈', publisher: '阳洁', department: '人力资源部', date: '2026-08-10', time: '14:00 ~ 16:00', location: '多功能会议厅', submitted: 40, participants: 40, points: 1600, average: 40, reviewStatus: '已结束', icon: '👥', files: ['座谈纪要.xlsx', '现场照片.zip'], positionType: '零售岗位' },
+  { id: 'company-walk', name: '喵厂 company walk', type: '文化体验', publisher: '李然', department: '人力资源部', date: '2026-08-06', time: '15:00 ~ 16:30', location: '园区主要路线', submitted: 51, participants: 51, points: 1530, average: 30, reviewStatus: '已结束', icon: '🐾', files: ['路线说明.pdf', '活动照片.zip'], positionType: '其他' },
+  { id: 'report', name: '结业汇报', type: '成果展示', publisher: '朱彦绮', department: '人力资源部', date: '2026-08-16', time: '13:30 ~ 17:00', location: '演讲厅 B 区', submitted: 64, participants: 64, points: 3840, average: 60, reviewStatus: '已结束', icon: '📊', files: ['汇报评分表.xlsx', '优秀作品集.pdf'], positionType: '公司岗位' },
+  { id: 'basketball', name: '梦工场篮球活动赛', type: '文体活动', publisher: '朱彦绮', department: '人力资源部', date: '2026-08-18', time: '19:00 ~ 21:00', location: '园区篮球场', submitted: 80, participants: 80, points: 4800, average: 60, reviewStatus: '已结束', icon: '🏀', files: ['赛程记录.xlsx', '活动照片.zip'], positionType: '其他' },
+  { id: 'sharing', name: '行业分享会', type: '经验交流', publisher: '周诗', department: '市场拓展部', date: '2026-08-05', time: '14:00 ~ 16:00', location: '培训室 B', submitted: 68, participants: 68, points: 2720, average: 40, reviewStatus: '已结束', icon: '💬', files: ['分享资料.pdf', '签到记录.xlsx'], positionType: '公司岗位' },
 ]
 
 const submittedMembers = [
@@ -49,23 +52,40 @@ const reviewStatIcons = {
   pendingReviews: activityImages.pendingReviews,
 } as const
 
-export function ActivityReviewPage({ onPageChange, onHome }: ActivityReviewPageProps) {
+const formatActivityDate = (value: string) => value ? value.replace(/-/g, '/') : 'yyyy/mm/dd'
+
+function ActivityDateField({ value, onChange, ariaLabel }: { value: string; onChange: (value: string) => void; ariaLabel: string }) {
+  return <span className="activity-date-control"><span aria-hidden="true">{formatActivityDate(value)}</span><span className="activity-date-control__icon" aria-hidden="true">▦</span><input type="date" value={value} onChange={event => onChange(event.target.value)} aria-label={ariaLabel} /></span>
+}
+
+export function ActivityReviewPage({ mode, onModeChange, onPageChange, onHome }: ActivityReviewPageProps) {
   const [query, setQuery] = useState('')
-  const [type, setType] = useState('')
-  const [date, setDate] = useState('')
+  const [status, setStatus] = useState<'待复盘' | '已复盘' | ''>('')
+  const [positionType, setPositionType] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
   const [selectedId, setSelectedId] = useState(endedActivities[0].id)
   const [notice, setNotice] = useState('')
   const [publishedIds, setPublishedIds] = useState<string[]>(endedActivities.filter(activity => activity.points > 0).map(activity => activity.id))
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [pointsOpen, setPointsOpen] = useState(false)
+  const [pointsMode, setPointsMode] = useState<'batch' | 'custom'>('batch')
+  const [pointValue, setPointValue] = useState('')
+  const [customPoints, setCustomPoints] = useState<Record<string, string>>({})
 
-  const filteredActivities = useMemo(() => endedActivities.filter(activity => {
+  const activities = useMemo(() => endedActivities.filter(activity => mode === 'general' || Boolean(activity.positionType)), [mode])
+  const filteredActivities = useMemo(() => activities.filter(activity => {
     const normalizedQuery = query.trim().toLowerCase()
-    return (!type || activity.type === type)
-      && (!date || activity.date === date)
-      && (!normalizedQuery || [activity.name, activity.publisher, activity.department, activity.location].join(' ').toLowerCase().includes(normalizedQuery))
-  }), [query, type, date])
+    const normalizedStatus = activity.reviewStatus === '已结束' ? '已复盘' : activity.reviewStatus
+    return (!status || normalizedStatus === status)
+      && (!positionType || activity.positionType === positionType)
+      && (!startDate || activity.date >= startDate)
+      && (!endDate || activity.date <= endDate)
+      && (!normalizedQuery || activity.name.toLowerCase().includes(normalizedQuery))
+  }), [activities, query, status, positionType, startDate, endDate])
   const selected = filteredActivities.find(activity => activity.id === selectedId) ?? filteredActivities[0] ?? endedActivities[0]
-  const types = Array.from(new Set(endedActivities.map(activity => activity.type)))
-  const pendingPoints = endedActivities.filter(activity => !publishedIds.includes(activity.id)).reduce((total, activity) => total + activity.submitted * activity.average, 0)
+  const pendingPoints = activities.filter(activity => !publishedIds.includes(activity.id)).reduce((total, activity) => total + activity.submitted * activity.average, 0)
+  const stats = { ended: activities.filter(activity => publishedIds.includes(activity.id)).length, pending: activities.filter(activity => !publishedIds.includes(activity.id)).length, all: activities.length }
 
   useEffect(() => {
     if (!notice) return
@@ -84,7 +104,7 @@ export function ActivityReviewPage({ onPageChange, onHome }: ActivityReviewPageP
         <button className="activity-brand" type="button" onClick={onHome} aria-label="返回梦工场首页"><img className="activity-brand__icon" src={activityConfigIcons.review} alt="" aria-hidden="true" /></button>
         <div className="activity-heading">
           <p className="activity-crumb">梦工场 <span>›</span> 活动配置中心 <span>›</span> 活动复盘</p>
-          <h1>活动复盘 <i>✦</i></h1>
+          <h1>{mode === 'professional' ? '专业活动复盘' : '通用活动复盘'} <i>✦</i></h1>
           <p>查看已结束活动结果与成长反馈</p>
         </div>
         <aside className="activity-user-card" aria-label="当前登录用户">
@@ -94,10 +114,9 @@ export function ActivityReviewPage({ onPageChange, onHome }: ActivityReviewPageP
       </header>
 
       <section className="activity-review-stats" aria-label="活动复盘数据概览">
-        <div className="review-stat"><span className="review-stat-icon is-calendar"><img src={reviewStatIcons.endedActivities} alt="" aria-hidden="true" /></span><div><span>已结束活动数量</span><strong>18</strong></div></div>
-        <div className="review-stat"><span className="review-stat-icon is-star"><img src={reviewStatIcons.pendingPoints} alt="" aria-hidden="true" /></span><div><span>待发放积分数量</span><strong>{pendingPoints.toLocaleString()}</strong></div></div>
-        <div className="review-stat"><span className="review-stat-icon is-people"><img src={reviewStatIcons.submittedResults} alt="" aria-hidden="true" /></span><div><span>已提交成果人数</span><strong>456</strong></div></div>
-        <div className="review-stat"><span className="review-stat-icon is-review"><img src={reviewStatIcons.pendingReviews} alt="" aria-hidden="true" /></span><div><span>待处理复盘数量</span><strong>5</strong></div></div>
+        <div className="review-stat"><span className="review-stat-icon is-calendar"><img src={reviewStatIcons.endedActivities} alt="" aria-hidden="true" /></span><div><span>已结束活动数量</span><strong>{stats.ended}</strong></div></div>
+        <div className="review-stat"><span className="review-stat-icon is-review"><img src={reviewStatIcons.pendingReviews} alt="" aria-hidden="true" /></span><div><span>待复盘活动数量</span><strong>{stats.pending}</strong></div></div>
+        <div className="review-stat"><span className="review-stat-icon is-people"><img src={reviewStatIcons.submittedResults} alt="" aria-hidden="true" /></span><div><span>全部活动数量</span><strong>{stats.all}</strong></div></div>
       </section>
 
       <section className="activity-review-layout">
@@ -107,23 +126,24 @@ export function ActivityReviewPage({ onPageChange, onHome }: ActivityReviewPageP
             <button type="button" onClick={() => onPageChange('general')}><img className="activity-nav-icon" src={activityConfigIcons.general} alt="" aria-hidden="true" />通用活动总览<i>›</i></button>
             <button type="button" onClick={() => onPageChange('professional')}><img className="activity-nav-icon" src={activityConfigIcons.professional} alt="" aria-hidden="true" />专业活动总览<i>›</i></button>
             <button type="button" onClick={() => onPageChange('publish')}><img className="activity-nav-icon" src={activityConfigIcons.publish} alt="" aria-hidden="true" />活动发布<i>›</i></button>
-            <button className="is-selected" type="button" onClick={() => onPageChange('review')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />活动复盘<i>›</i></button>
+            <button className={mode === 'general' ? 'is-selected' : ''} type="button" onClick={() => onModeChange('general')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />通用活动复盘<i>›</i></button>
+            <button className={mode === 'professional' ? 'is-selected' : ''} type="button" onClick={() => onModeChange('professional')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />专业活动复盘<i>›</i></button>
           </nav>
           <div className="activity-sidebar__illustration"><img src={activityConfigIcons.review} alt="活动复盘插画" /><strong>活动复盘管理</strong><p>复盘活动成效，驱动持续优化</p></div>
         </aside>
 
         <section className="activity-review-content">
-          <div className="review-filters" aria-label="活动复盘筛选条件">
-            <select value={type} onChange={event => setType(event.target.value)} aria-label="按活动类型搜索"><option value="">按活动类型搜索</option>{types.map(item => <option key={item}>{item}</option>)}</select>
-            <label className="review-date"><span>按时间搜索</span><input type="date" value={date} onChange={event => setDate(event.target.value)} aria-label="按时间搜索" /></label>
-            <label className="review-query"><input value={query} onChange={event => setQuery(event.target.value)} placeholder="输入活动名称/发布人/地点/关键词" aria-label="活动查询" /><span aria-hidden="true">⌕</span></label>
-            <button className="review-query-button" type="button" onClick={() => setNotice(filteredActivities.length ? `已查询到 ${filteredActivities.length} 场已结束活动` : '没有匹配的活动')}>活动查询</button>
+          <div className="activity-filters" aria-label="活动复盘筛选条件">
+            <select value={status} onChange={event => setStatus(event.target.value as typeof status)} aria-label="按活动状态搜索"><option value="">按活动状态搜索</option><option>待复盘</option><option>已复盘</option></select>
+            {mode === 'professional' && <select value={positionType} onChange={event => setPositionType(event.target.value)} aria-label="按岗位类型搜索"><option value="">按岗位类型搜索</option><option>零售岗位</option><option>公司岗位</option><option>运营岗位</option><option>其他</option></select>}
+            <label className="activity-date-range"><span>活动日期</span><ActivityDateField value={startDate} onChange={setStartDate} ariaLabel="开始日期" /><b>至</b><ActivityDateField value={endDate} onChange={setEndDate} ariaLabel="结束日期" /></label>
+            <label className="activity-query"><input value={query} onChange={event => setQuery(event.target.value)} placeholder="输入活动名称搜索" aria-label="按活动名称搜索" /><span aria-hidden="true">⌕</span></label>
           </div>
 
-          <div className="review-workspace-heading"><div><h2>活动结果总览</h2><span>仅展示已结束活动</span></div><button type="button" onClick={() => { setQuery(''); setType(''); setDate(''); setNotice('筛选条件已重置') }}>↻ 重置筛选</button></div>
+          <div className="review-workspace-heading"><div><h2>活动结果总览</h2><span>{mode === 'professional' ? '专业活动' : '通用活动'} · 共 {filteredActivities.length} 项</span></div><button type="button" onClick={() => { setQuery(''); setStatus(''); setPositionType(''); setStartDate(''); setEndDate(''); setNotice('筛选条件已重置') }}>↻ 重置筛选</button></div>
           <div className="review-workspace-grid">
             <section className="review-results-card" aria-label="已结束活动列表">
-              <div className="review-table-scroll"><table className="review-table"><thead><tr><th>活动名称</th><th>发布人/部门</th><th>时间</th><th>地点</th><th>提交人数</th><th>已发积分</th><th>状态</th><th>操作</th></tr></thead><tbody>{filteredActivities.map(activity => <tr className={selected.id === activity.id ? 'is-selected' : ''} key={activity.id} onClick={() => setSelectedId(activity.id)}><td><span className="review-row-icon">{activity.icon}</span><div><strong>{activity.name}</strong><small>{activity.type}</small></div></td><td>{activity.publisher} / {activity.department}</td><td><time dateTime={activity.date}>{activity.date}<br />{activity.time}</time></td><td>{activity.location}</td><td>{activity.submitted}/{activity.participants}</td><td><img src={statIcons.stars} alt="" aria-hidden="true" /> {activity.points.toLocaleString()}</td><td><span className={`review-status ${activity.reviewStatus === '待复盘' ? 'is-pending' : 'is-done'}`}>{activity.reviewStatus}</span></td><td><button type="button" className="review-row-action" onClick={event => { event.stopPropagation(); setSelectedId(activity.id); setNotice(`已打开“${activity.name}”复盘详情`) }}>查看</button>{activity.points === 0 && <button type="button" className="review-row-action is-points" onClick={event => { event.stopPropagation(); setSelectedId(activity.id); publishPoints(activity) }}>发放积分</button>}</td></tr>)}{!filteredActivities.length && <tr><td colSpan={8} className="review-empty">没有匹配的已结束活动，请调整查询条件</td></tr>}</tbody></table></div><footer className="review-table-footer"><span>共 {filteredActivities.length} 条</span><div><button type="button" aria-label="上一页" disabled>‹</button><button className="is-current" type="button">1</button><button type="button" aria-label="下一页" disabled>›</button></div><label>10条/页 <span></span></label></footer>
+              <div className="review-table-scroll"><table className="review-table"><thead><tr><th>活动名称</th><th>发布人</th><th>时间</th><th>地点</th><th>报名人数</th><th>状态</th><th>操作</th></tr></thead><tbody>{filteredActivities.map(activity => { const reviewed = publishedIds.includes(activity.id); return <tr className={selected.id === activity.id ? 'is-selected' : ''} key={activity.id} onClick={() => setSelectedId(activity.id)}><td><span className="review-row-icon">{activity.icon}</span><div><strong>{activity.name}</strong><small>{activity.type}</small></div></td><td>{activity.publisher}</td><td><time dateTime={activity.date}>{activity.date}<br />{activity.time}</time></td><td>{activity.location}</td><td>{activity.submitted}/{activity.participants}</td><td><span className={`review-status ${reviewed ? 'is-done' : 'is-pending'}`}>{reviewed ? '已复盘' : '待复盘'}</span></td><td><button type="button" className="review-row-action" onClick={event => { event.stopPropagation(); setSelectedId(activity.id); setDetailOpen(true) }}>查看</button><button type="button" className="review-row-action is-points" onClick={event => { event.stopPropagation(); setSelectedId(activity.id); setPointValue(String(activity.average)); setPointsOpen(true) }}>发放积分</button><button type="button" className="review-row-action" onClick={event => { event.stopPropagation(); setNotice(`“${activity.name}”参与者材料已准备打包下载`) }}>附件下载</button></td></tr> })}{!filteredActivities.length && <tr><td colSpan={7} className="review-empty">没有匹配的活动，请调整查询条件</td></tr>}</tbody></table></div><footer className="review-table-footer"><span>共 {filteredActivities.length} 条</span><div><button type="button" aria-label="上一页" disabled>‹</button><button className="is-current" type="button">1</button><button type="button" aria-label="下一页" disabled>›</button></div></footer>
             </section>
 
             <aside className="review-detail-panel" aria-label="当前活动复盘详情">
@@ -136,6 +156,8 @@ export function ActivityReviewPage({ onPageChange, onHome }: ActivityReviewPageP
           </div>
         </section>
       </section>
+      {detailOpen && <div className="activity-detail-backdrop" role="presentation" onMouseDown={event => { if (event.currentTarget === event.target) setDetailOpen(false) }}><section className="activity-detail-modal" role="dialog" aria-modal="true" aria-labelledby="review-detail-title"><button className="activity-detail-close" type="button" onClick={() => setDetailOpen(false)} aria-label="关闭">×</button><div className="activity-detail-heading"><span className="activity-detail-icon">{selected.icon}</span><div><p>活动复盘详情</p><h2 id="review-detail-title">{selected.name}</h2><span className={`activity-status ${publishedIds.includes(selected.id) ? 'is-reviewed' : 'is-pending-review'}`}>{publishedIds.includes(selected.id) ? '已复盘' : '待复盘'}</span></div></div><div className="activity-detail-content"><div className="activity-detail-summary"><span>发布人<strong>{selected.publisher}</strong></span><span>活动时间<strong>{selected.date} {selected.time}</strong></span><span>活动地点<strong>{selected.location}</strong></span><span>报名人数<strong>{selected.participants}</strong></span><span>上传材料人数<strong>{selected.submitted}</strong></span></div></div><footer className="activity-detail-actions"><button type="button" className="activity-detail-button is-secondary" onClick={() => setDetailOpen(false)}>关闭</button></footer></section></div>}
+      {pointsOpen && <div className="review-modal-backdrop" role="presentation" onMouseDown={event => { if (event.currentTarget === event.target) setPointsOpen(false) }}><section className="review-modal points-modal" role="dialog" aria-modal="true" aria-labelledby="points-modal-title"><button className="review-modal-close" type="button" onClick={() => setPointsOpen(false)} aria-label="关闭">×</button><h2 id="points-modal-title">发放积分 · {selected.name}</h2><div className="points-tabs"><button className={pointsMode === 'batch' ? 'is-active' : ''} type="button" onClick={() => setPointsMode('batch')}>批量发放</button><button className={pointsMode === 'custom' ? 'is-active' : ''} type="button" onClick={() => setPointsMode('custom')}>自定义发放</button></div>{pointsMode === 'batch' ? <label className="points-input"><span>本次发放星愿值</span><input type="number" min="0" value={pointValue || selected.average} onChange={event => setPointValue(event.target.value)} /><small>默认使用活动创建时的星愿值，可修改</small></label> : <div className="custom-points-list">{submittedMembers.map(member => <label key={member.name}><span>{member.name}</span><input type="number" min="0" value={customPoints[member.name] ?? String(selected.average)} onChange={event => setCustomPoints(previous => ({ ...previous, [member.name]: event.target.value }))} /></label>)}</div>}<footer className="review-modal-actions"><button type="button" className="builder-button is-outline" onClick={() => { setPointsOpen(false); setNotice('积分发放设置已暂存') }}>暂存</button><button type="button" className="builder-button is-primary" onClick={() => { publishPoints(selected); setPointsOpen(false) }}>发放</button></footer></section></div>}
       {notice && <div className="activity-toast" role="status">{notice}</div>}
     </main>
   )

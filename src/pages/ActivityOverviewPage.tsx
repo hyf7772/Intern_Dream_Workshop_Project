@@ -9,6 +9,7 @@ interface ActivityOverviewPageProps {
   onPageChange: (pageId: ActivityOverviewId) => void
   onOpenPublish: () => void
   onOpenReview: () => void
+  onOpenProfessionalReview: () => void
   onHome: () => void
 }
 
@@ -21,6 +22,12 @@ const statusClass: Record<ActivityStatus, string> = {
 const positionTypes = ['零售岗位', '公司岗位', '运营岗位', '其他'] as const
 const draftStorageKey = 'dream-factory-activity-drafts'
 
+const formatActivityDate = (value: string) => value ? value.replace(/-/g, '/') : 'yyyy/mm/dd'
+
+function ActivityDateField({ value, onChange, ariaLabel }: { value: string; onChange: (value: string) => void; ariaLabel: string }) {
+  return <span className="activity-date-control"><span aria-hidden="true">{formatActivityDate(value)}</span><span className="activity-date-control__icon" aria-hidden="true">▦</span><input type="date" value={value} onChange={event => onChange(event.target.value)} aria-label={ariaLabel} /></span>
+}
+
 const loadDrafts = (overview: ActivityOverviewId): ActivityItem[] => {
   try {
     const stored = JSON.parse(window.localStorage.getItem(draftStorageKey) ?? '[]') as ActivityItem[]
@@ -30,7 +37,7 @@ const loadDrafts = (overview: ActivityOverviewId): ActivityItem[] => {
   }
 }
 
-export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOpenReview, onHome }: ActivityOverviewPageProps) {
+export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOpenReview, onOpenProfessionalReview, onHome }: ActivityOverviewPageProps) {
   const config = activityOverviews[pageId]
   const [items, setItems] = useState<ActivityItem[]>(() => [...config.items, ...loadDrafts(pageId)])
   const [status, setStatus] = useState<ActivityStatus | ''>('')
@@ -99,7 +106,8 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
             <button className={pageId === 'general' ? 'is-selected' : ''} type="button" onClick={() => onPageChange('general')}><img className="activity-nav-icon" src={activityConfigIcons.general} alt="" aria-hidden="true" />通用活动总览<i>›</i></button>
             <button className={pageId === 'professional' ? 'is-selected' : ''} type="button" onClick={() => onPageChange('professional')}><img className="activity-nav-icon" src={activityConfigIcons.professional} alt="" aria-hidden="true" />专业活动总览<i>›</i></button>
             <button type="button" onClick={onOpenPublish}><img className="activity-nav-icon" src={activityConfigIcons.publish} alt="" aria-hidden="true" />活动发布<i>›</i></button>
-            <button type="button" onClick={onOpenReview}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />活动复盘<i>›</i></button>
+            <button type="button" onClick={onOpenReview}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />通用活动复盘<i>›</i></button>
+            <button type="button" onClick={onOpenProfessionalReview}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />专业活动复盘<i>›</i></button>
           </nav>
           <div className="activity-sidebar__illustration"><img src={activityImages.operations} alt="活动运营看板插画" /><strong>{pageId === 'general' ? '活动运营看板' : '专业实践看板'}</strong><p>{pageId === 'general' ? '统一配置与跟踪活动全流程' : '支持按岗位配置与追踪实践活动'}</p></div>
         </aside>
@@ -108,7 +116,7 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
           <div className="activity-filters" aria-label="活动筛选条件">
             <select aria-label="按活动状态搜索" value={status} onChange={event => setStatus(event.target.value as ActivityStatus | '')}><option value="">按活动状态搜索</option>{(['草稿', '已发布', '待复盘', '已复盘'] as ActivityStatus[]).map(item => <option key={item}>{item}</option>)}</select>
             {pageId === 'professional' && <select aria-label="按所属岗位类型搜索" value={positionType} onChange={event => setPositionType(event.target.value)}><option value="">按所属岗位类型搜索</option>{positionTypes.map(item => <option key={item}>{item}</option>)}</select>}
-            <label className="activity-date-range"><span>活动日期</span><input type="date" aria-label="开始日期" value={startDate} onChange={event => setStartDate(event.target.value)} /><b>至</b><input type="date" aria-label="结束日期" value={endDate} onChange={event => setEndDate(event.target.value)} /></label>
+            <label className="activity-date-range"><span>活动日期</span><ActivityDateField value={startDate} onChange={setStartDate} ariaLabel="开始日期" /><b>至</b><ActivityDateField value={endDate} onChange={setEndDate} ariaLabel="结束日期" /></label>
             <label className="activity-query"><input value={query} onChange={event => setQuery(event.target.value)} placeholder="输入活动名称搜索" aria-label="按活动名称搜索" /><span aria-hidden="true">⌕</span></label>
           </div>
 

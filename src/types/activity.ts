@@ -1,5 +1,5 @@
 export type ActivityOverviewId = 'general' | 'professional'
-export type ActivityPageId = ActivityOverviewId | 'publish' | 'review'
+export type ActivityPageId = ActivityOverviewId | 'publish' | 'review' | 'review-professional'
 
 export type ActivityStatus = '草稿' | '已发布' | '待复盘' | '已复盘'
 

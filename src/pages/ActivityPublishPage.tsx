@@ -153,7 +153,8 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
             <button type="button" onClick={() => onPageChange('general')}><img className="activity-nav-icon" src={activityConfigIcons.general} alt="" aria-hidden="true" />通用活动总览<i>›</i></button>
             <button type="button" onClick={() => onPageChange('professional')}><img className="activity-nav-icon" src={activityConfigIcons.professional} alt="" aria-hidden="true" />专业活动总览<i>›</i></button>
             <button className="is-selected" type="button" onClick={() => onPageChange('publish')}><img className="activity-nav-icon" src={activityConfigIcons.publish} alt="" aria-hidden="true" />活动发布<i>›</i></button>
-            <button type="button" onClick={() => onPageChange('review')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />活动复盘<i>›</i></button>
+          <button type="button" onClick={() => onPageChange('review')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />通用活动复盘<i>›</i></button>
+          <button type="button" onClick={() => onPageChange('review-professional')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />专业活动复盘<i>›</i></button>
           </nav>
           <div className="activity-sidebar__illustration">
             <img src={activityConfigIcons.publish} alt="活动发布插画" />

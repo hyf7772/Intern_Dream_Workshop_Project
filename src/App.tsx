@@ -13,7 +13,7 @@ import type { PointsPageId } from './types/points'
 import type { TaskPageId } from './types/task'
 
 const isTaskPageId = (value: string): value is TaskPageId => ['newcomer', 'mainline', 'professional'].includes(value)
-const isActivityPageId = (value: string): value is ActivityPageId => ['general', 'professional', 'publish', 'review'].includes(value)
+const isActivityPageId = (value: string): value is ActivityPageId => ['general', 'professional', 'publish', 'review', 'review-professional'].includes(value)
 const isPointsPageId = (value: string): value is PointsPageId => ['ranking', 'gifts', 'redemptions'].includes(value)
 const readTaskPageFromHash = (): TaskPageId | null => {
   const value = window.location.hash.replace('#/tasks/', '')
@@ -32,12 +32,14 @@ function App() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => authService.restoreSession())
   const [taskPage, setTaskPage] = useState<TaskPageId | null>(() => readTaskPageFromHash())
   const [activityPage, setActivityPage] = useState<ActivityPageId | null>(() => readActivityPageFromHash())
+  const [activityReviewMode, setActivityReviewMode] = useState<'general' | 'professional'>(() => window.location.hash.endsWith('review-professional') ? 'professional' : 'general')
   const [pointsPage, setPointsPage] = useState<PointsPageId | null>(() => readPointsPageFromHash())
 
   useEffect(() => {
     const handleHashChange = () => {
       setTaskPage(readTaskPageFromHash())
       setActivityPage(readActivityPageFromHash())
+      setActivityReviewMode(window.location.hash.endsWith('review-professional') ? 'professional' : 'general')
       setPointsPage(readPointsPageFromHash())
     }
     window.addEventListener('hashchange', handleHashChange)
@@ -76,13 +78,14 @@ function App() {
   } else if (currentUser.role === 'admin' && activityPage) {
     pageContent = activityPage === 'publish'
       ? <ActivityPublishPage onPageChange={navigateToActivityPage} onHome={navigateHome} />
-      : activityPage === 'review'
-        ? <ActivityReviewPage onPageChange={navigateToActivityPage} onHome={navigateHome} />
+      : (activityPage === 'review' || activityPage === 'review-professional')
+        ? <ActivityReviewPage mode={activityReviewMode} onModeChange={setActivityReviewMode} onPageChange={navigateToActivityPage} onHome={navigateHome} />
         : <ActivityOverviewPage
           pageId={activityPage}
           onPageChange={page => navigateToActivityPage(page)}
           onOpenPublish={() => navigateToActivityPage('publish')}
           onOpenReview={() => navigateToActivityPage('review')}
+          onOpenProfessionalReview={() => navigateToActivityPage('review-professional')}
           onHome={navigateHome}
         />
   }
