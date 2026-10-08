@@ -9,69 +9,74 @@ import type { NavigationId, TaskPageId } from '../types/task'
  */
 export const publicAsset = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, '')}`
 
-const ICON_ROOT = publicAsset('assets/icons')
-const iconAsset = (filename: string) => `${ICON_ROOT}/${filename}`
+const asset = (folder: string, filename: string) => publicAsset(`assets/${folder}/${filename}`)
+const iconAsset = (filename: string) => asset('icons', filename)
+const avatarAsset = (filename: string) => asset('avatars', filename)
+const illustrationAsset = (filename: string) => asset('illustrations', filename)
+const pointAsset = (filename: string) => asset('points', filename)
+const giftAsset = (filename: string) => asset('gifts', filename)
+const brandingAsset = (filename: string) => asset('branding', filename)
 
 export const homeBackgrounds = {
-  admin: publicAsset('home-admin.png'),
-  intern: publicAsset('home-intern.png'),
+  admin: asset('backgrounds', 'home-admin.png'),
+  intern: asset('backgrounds', 'home-intern.png'),
 } as const
 
 export const welcomeImages = [
-  { src: publicAsset('assets/intern-welcome-01-childrens-day.png'), alt: '2026 六一儿童节快乐' },
-  { src: publicAsset('assets/intern-welcome-02-party-day.png'), alt: '2026 七一建党节' },
-  { src: publicAsset('assets/intern-welcome-03-qixi.png'), alt: '2026 七夕快乐' },
-  { src: publicAsset('assets/intern-welcome-04-birthday.png'), alt: '2026 生日快乐' },
+  { src: illustrationAsset('intern-welcome-01-childrens-day.png'), alt: '2026 六一儿童节快乐' },
+  { src: illustrationAsset('intern-welcome-02-party-day.png'), alt: '2026 七一建党节' },
+  { src: illustrationAsset('intern-welcome-03-qixi.png'), alt: '2026 七夕快乐' },
+  { src: illustrationAsset('intern-welcome-04-birthday.png'), alt: '2026 生日快乐' },
 ] as const
 
 export const homeModuleImages = {
-  internProfile: publicAsset('assets/intern-profile-gallery.png'),
-  adminProfile: publicAsset('assets/admin-profile-overview.png'),
+  internProfile: illustrationAsset('intern-profile-gallery.png'),
+  adminProfile: illustrationAsset('admin-profile-overview.png'),
   growthJournal: [
-    publicAsset('assets/growth-journal-01.png'),
-    publicAsset('assets/growth-journal-02.png'),
-    publicAsset('assets/growth-journal-03.png'),
-    publicAsset('assets/growth-journal-04.png'),
-    publicAsset('assets/growth-journal-05.png'),
-    publicAsset('assets/growth-journal-06.png'),
-    publicAsset('assets/growth-journal-07.png'),
-    publicAsset('assets/growth-journal-08.png'),
+    illustrationAsset('growth-journal-01.png'),
+    illustrationAsset('growth-journal-02.png'),
+    illustrationAsset('growth-journal-03.png'),
+    illustrationAsset('growth-journal-04.png'),
+    illustrationAsset('growth-journal-05.png'),
+    illustrationAsset('growth-journal-06.png'),
+    illustrationAsset('growth-journal-07.png'),
+    illustrationAsset('growth-journal-08.png'),
   ],
 } as const
 
 export const activityImages = {
-  operations: publicAsset('assets/activity-operations.png'),
-  poster: publicAsset('assets/activity-poster.png'),
-  sprite: publicAsset('assets/activity-icon-sprite.png'),
-  pendingReviews: iconAsset('1f73c0e2-f8f5-42da-b4d3-4d540ae49cb4.png'),
+  operations: illustrationAsset('activity-operations.png'),
+  poster: publicAsset('assets/posters/activity-poster.png'),
+  sprite: iconAsset('activity-icon-sprite.png'),
+  pendingReviews: illustrationAsset('pending-reviews.png'),
 } as const
 
 export const pointsPageImages = {
-  adminAvatar: iconAsset('0dfe422f-88c4-455b-839e-677070ec4c8a.png'),
-  rankingMale: iconAsset('23926e49-04d6-4b2a-adea-5b04b541825f.png'),
-  rankingMaleBlue: iconAsset('8910584a-bd1f-41be-81c9-e7c2c6d8a052.png'),
-  podium: iconAsset('87556fa5-351b-47be-8b04-7b91cb1f2b24.png'),
-  rankOne: iconAsset('b4d34b55-7369-4ccd-872f-4f9ac0bc5b01.png'),
-  rankTwo: iconAsset('1aa1d46e-b002-49f1-abe5-d357be1efaef.png'),
-  rankThree: iconAsset('81179d6c-6b60-424e-8d33-32fb848f06e0.png'),
-  gift: iconAsset('3be3a0fc-1a69-4539-bb48-d8a83d4c1320.png'),
-  redemption: iconAsset('b9771bde-48e8-45eb-b679-bf2e6eb3dd34.png'),
+  adminAvatar: avatarAsset('admin-avatar.png'),
+  rankingMale: avatarAsset('intern-avatar.png'),
+  rankingMaleBlue: avatarAsset('ranking-male-blue.png'),
+  podium: pointAsset('podium.png'),
+  rankOne: pointAsset('rank-one.png'),
+  rankTwo: pointAsset('rank-two.png'),
+  rankThree: pointAsset('rank-three.png'),
+  gift: pointAsset('gift.png'),
+  redemption: pointAsset('redemption.png'),
 } as const
 
 export const giftImages = {
-  g01: iconAsset('01_徽章礼盒.png'),
-  g02: iconAsset('02_向日葵马克杯.png'),
-  g03: iconAsset('03_星空马克杯.png'),
-  g04: iconAsset('04_小招喵纸巾盒.png'),
-  g05: iconAsset('05_小招喵方形周边.png'),
-  g06: iconAsset('06_小招喵马克杯.png'),
-  g07: iconAsset('07_小招喵挂饰套装.png'),
-  g08: iconAsset('08_小招喵拖鞋.png'),
+  g01: giftAsset('badge-box.png'),
+  g02: giftAsset('sunflower-mug.png'),
+  g03: giftAsset('starry-mug.png'),
+  g04: giftAsset('xiaozhaomiao-tissue-box.png'),
+  g05: giftAsset('xiaozhaomiao-square-gift.png'),
+  g06: giftAsset('xiaozhaomiao-mug.png'),
+  g07: giftAsset('xiaozhaomiao-hanging-set.png'),
+  g08: giftAsset('xiaozhaomiao-slippers.png'),
 } as const
 
 /** CSS cannot import TypeScript constants directly, so main.tsx installs these as CSS variables. */
 export const assetCssVariables = {
-  '--asset-login-background': `url("${publicAsset('dream-factory-home.png')}")`,
+  '--asset-login-background': `url("${asset('backgrounds', 'login-background.png')}")`,
   '--asset-activity-sprite': `url("${activityImages.sprite}")`,
   '--asset-recipient-avatar': `url("${pointsPageImages.adminAvatar}")`,
 } as const
@@ -96,19 +101,19 @@ export const activityConfigIcons = {
 } as const
 
 export const profileAvatars = {
-  activityManager: iconAsset('84f9a030-1d33-4277-ae62-c6b020ad10af.png'),
-  intern: iconAsset('23926e49-04d6-4b2a-adea-5b04b541825f.png'),
-  mentor: iconAsset('mentor-avatar.png'),
+  activityManager: avatarAsset('activity-manager.png'),
+  intern: avatarAsset('intern-avatar.png'),
+  mentor: avatarAsset('mentor-avatar.png'),
 } as const
 
 export const loginMascotIcons = {
-  brand: iconAsset('288283da-c07f-4a5c-9201-79aeca8f9581.png'),
+  brand: brandingAsset('login-brand.png'),
 } as const
 
 export const categoryIcons: Record<TaskPageId, string> = {
-  newcomer: iconAsset('category-newcomer.png'),
-  mainline: iconAsset('category-mainline.png'),
-  professional: iconAsset('category-professional.png'),
+  newcomer: iconAsset('task-category-newcomer.png'),
+  mainline: iconAsset('task-category-mainline.png'),
+  professional: iconAsset('task-category-professional.png'),
 }
 
 export const navigationIcons: Record<NavigationId, string> = {
@@ -119,14 +124,14 @@ export const navigationIcons: Record<NavigationId, string> = {
   mine: iconAsset('nav-profile.png'),
 }
 
-export const sharedActivityIcon = iconAsset('activity-shared.png')
+export const sharedActivityIcon = iconAsset('task-checklist.png')
 
 export const taskIcons = {
   checklist: sharedActivityIcon,
-  taskPlan: iconAsset('3f1209a7-1fe2-4de0-8204-743413d5e115.png'),
-  sports: iconAsset('f0b9227d-af7b-4e37-9581-1c382bdef72b.png'),
-  branchVisit: iconAsset('877f1149-c894-487f-857d-6be5ce94bca1.png'),
-  announcement: iconAsset('605370fc-2e18-4d89-ae13-42e952ba5de5.png'),
-  communication: iconAsset('7d7ad457-d4e0-487a-a725-2ca44ea3a0ae.png'),
-  handbook: iconAsset('f631f4ee-e48a-49e1-8dec-6d722b6b26b5.png'),
+  taskPlan: iconAsset('task-plan.png'),
+  sports: iconAsset('task-sports.png'),
+  branchVisit: iconAsset('task-branch-visit.png'),
+  announcement: iconAsset('task-announcement.png'),
+  communication: iconAsset('task-communication.png'),
+  handbook: iconAsset('task-handbook.png'),
 } as const

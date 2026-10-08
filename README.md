@@ -112,6 +112,8 @@ src/
    └─ points.css
 ```
 
+公共图片资源位于 `public/assets/`，按 `backgrounds`、`avatars`、`branding`、`gifts`、`icons`、`illustrations`、`points` 和 `posters` 分类；所有页面通过 `src/constants/assets.ts` 获取资源路径。
+
 各业务页面通过 `services/` 访问数据，当前 service 实现仍返回 mock 数据，并使用浏览器存储模拟活动草稿。接入后端时，只需替换 service 内部的接口实现，页面组件继续负责展示和交互编排。
 
 任务服务已提供 `createHttpTaskService` 和统一 `apiClient`，后端接入时配置 `VITE_API_BASE_URL` 即可自动切换为 HTTP 实现；未配置时继续使用 mock，便于本地演示和测试。
