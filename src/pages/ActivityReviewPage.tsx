@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
+import { ActivityHeader, ActivitySidebar } from '../components/activity'
+import { activityConfigIcons, activityImages, statIcons } from '../constants/assets'
 import { activityService } from '../services/activityService'
 import type { ActivityPageId, ReviewActivity } from '../types/activity'
 
@@ -68,18 +69,13 @@ export function ActivityReviewPage({ mode, onModeChange, onPageChange, onHome }:
 
   return (
     <main className="activity-review-page">
-      <header className="activity-header">
-        <button className="activity-brand" type="button" onClick={onHome} aria-label="返回梦工场首页"><img className="activity-brand__icon" src={activityConfigIcons.review} alt="" aria-hidden="true" /></button>
-        <div className="activity-heading">
-          <p className="activity-crumb">梦工场 <span>›</span> 活动配置中心 <span>›</span> 活动复盘</p>
-          <h1>{mode === 'professional' ? '专业活动复盘' : '通用活动复盘'} <i>✦</i></h1>
-          <p>查看已结束活动结果与成长反馈</p>
-        </div>
-        <aside className="activity-user-card" aria-label="当前登录用户">
-          <div className="activity-user-card__avatar" aria-hidden="true"><img src={profileAvatars.activityManager} alt="" /></div>
-          <div><strong>阳洁</strong><small>活动配置中心</small></div>
-        </aside>
-      </header>
+      <ActivityHeader
+        icon={activityConfigIcons.review}
+        title={mode === 'professional' ? '专业活动复盘' : '通用活动复盘'}
+        subtitle="查看已结束活动结果与成长反馈"
+        crumb="活动复盘"
+        onHome={onHome}
+      />
 
       <section className="activity-review-stats" aria-label="活动复盘数据概览">
         <div className="review-stat"><span className="review-stat-icon is-calendar"><img src={reviewStatIcons.endedActivities} alt="" aria-hidden="true" /></span><div><span>已结束活动数量</span><strong>{stats.ended}</strong></div></div>
@@ -88,17 +84,16 @@ export function ActivityReviewPage({ mode, onModeChange, onPageChange, onHome }:
       </section>
 
       <section className="activity-review-layout">
-        <aside className="activity-sidebar activity-review-sidebar">
-          <h2>功能模块</h2>
-          <nav aria-label="活动配置功能导航">
-            <button type="button" onClick={() => onPageChange('general')}><img className="activity-nav-icon" src={activityConfigIcons.general} alt="" aria-hidden="true" />通用活动总览<i>›</i></button>
-            <button type="button" onClick={() => onPageChange('professional')}><img className="activity-nav-icon" src={activityConfigIcons.professional} alt="" aria-hidden="true" />专业活动总览<i>›</i></button>
-            <button type="button" onClick={() => onPageChange('publish')}><img className="activity-nav-icon" src={activityConfigIcons.publish} alt="" aria-hidden="true" />活动发布<i>›</i></button>
-            <button className={mode === 'general' ? 'is-selected' : ''} type="button" onClick={() => onModeChange('general')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />通用活动复盘<i>›</i></button>
-            <button className={mode === 'professional' ? 'is-selected' : ''} type="button" onClick={() => onModeChange('professional')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />专业活动复盘<i>›</i></button>
-          </nav>
-          <div className="activity-sidebar__illustration"><img src={activityConfigIcons.review} alt="活动复盘插画" /><strong>活动复盘管理</strong><p>复盘活动成效，驱动持续优化</p></div>
-        </aside>
+        <ActivitySidebar
+          activePage={mode === 'professional' ? 'review-professional' : 'review'}
+          onPageChange={pageId => {
+            if (pageId === 'review') onModeChange('general')
+            else if (pageId === 'review-professional') onModeChange('professional')
+            else onPageChange(pageId)
+          }}
+          className="activity-review-sidebar"
+          illustration={{ src: activityConfigIcons.review, alt: '活动复盘插画', title: '活动复盘管理', description: '复盘活动成效，驱动持续优化' }}
+        />
 
         <section className="activity-review-content">
           <div className="activity-filters" aria-label="活动复盘筛选条件">

@@ -1,15 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ActivityDetailModal } from '../components/ActivityDetailModal'
-import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
+import { ActivityHeader, ActivitySidebar } from '../components/activity'
+import { activityConfigIcons, activityImages, statIcons } from '../constants/assets'
 import { activityService } from '../services/activityService'
-import type { ActivityItem, ActivityOverviewId, ActivityStatus } from '../types/activity'
+import type { ActivityItem, ActivityOverviewId, ActivityPageId, ActivityStatus } from '../types/activity'
 
 interface ActivityOverviewPageProps {
   pageId: ActivityOverviewId
-  onPageChange: (pageId: ActivityOverviewId) => void
-  onOpenPublish: () => void
-  onOpenReview: () => void
-  onOpenProfessionalReview: () => void
+  onPageChange: (pageId: ActivityPageId) => void
   onHome: () => void
 }
 
@@ -27,7 +25,7 @@ function ActivityDateField({ value, onChange, ariaLabel }: { value: string; onCh
   return <span className="activity-date-control"><span aria-hidden="true">{formatActivityDate(value)}</span><span className="activity-date-control__icon" aria-hidden="true">▦</span><input type="date" value={value} onChange={event => onChange(event.target.value)} aria-label={ariaLabel} /></span>
 }
 
-export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOpenReview, onOpenProfessionalReview, onHome }: ActivityOverviewPageProps) {
+export function ActivityOverviewPage({ pageId, onPageChange, onHome }: ActivityOverviewPageProps) {
   const config = activityService.getOverview(pageId)
   const [items, setItems] = useState<ActivityItem[]>(() => activityService.getOverviewItems(pageId))
   const [status, setStatus] = useState<ActivityStatus | ''>('')
@@ -72,35 +70,23 @@ export function ActivityOverviewPage({ pageId, onPageChange, onOpenPublish, onOp
 
   return (
     <main className="activity-page">
-      <header className="activity-header">
-        <button className="activity-brand" type="button" onClick={onHome} aria-label="返回梦工场首页"><img className="activity-brand__icon" src={activityConfigIcons.general} alt="" aria-hidden="true" /></button>
-        <div className="activity-heading">
-          <p className="activity-crumb">梦工场 <span>›</span> 活动配置中心 <span>›</span> {config.title}</p>
-          <h1>{config.title}<i>✦</i></h1>
-          <p>{config.subtitle}</p>
-        </div>
-        <aside className="activity-user-card" aria-label="当前登录用户">
-          <div className="activity-user-card__avatar" aria-hidden="true"><img src={profileAvatars.activityManager} alt="" /></div>
-          <div><strong>阳洁</strong><small>活动配置中心</small></div>
-        </aside>
-      </header>
+      <ActivityHeader icon={activityConfigIcons.general} title={config.title} subtitle={config.subtitle} crumb={config.title} onHome={onHome} />
 
       <section className="activity-stats" aria-label="活动数据概览">
         {stats.map(stat => <div className="activity-stat" key={stat.label}><img className="activity-stat__icon" src={stat.icon} alt="" aria-hidden="true" /><div><span>{stat.label}</span><strong>{stat.value}</strong></div></div>)}
       </section>
 
       <section className="activity-workspace">
-        <aside className="activity-sidebar">
-          <h2>功能模块</h2>
-          <nav aria-label="活动配置功能导航">
-            <button className={pageId === 'general' ? 'is-selected' : ''} type="button" onClick={() => onPageChange('general')}><img className="activity-nav-icon" src={activityConfigIcons.general} alt="" aria-hidden="true" />通用活动总览<i>›</i></button>
-            <button className={pageId === 'professional' ? 'is-selected' : ''} type="button" onClick={() => onPageChange('professional')}><img className="activity-nav-icon" src={activityConfigIcons.professional} alt="" aria-hidden="true" />专业活动总览<i>›</i></button>
-            <button type="button" onClick={onOpenPublish}><img className="activity-nav-icon" src={activityConfigIcons.publish} alt="" aria-hidden="true" />活动发布<i>›</i></button>
-            <button type="button" onClick={onOpenReview}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />通用活动复盘<i>›</i></button>
-            <button type="button" onClick={onOpenProfessionalReview}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />专业活动复盘<i>›</i></button>
-          </nav>
-          <div className="activity-sidebar__illustration"><img src={activityImages.operations} alt="活动运营看板插画" /><strong>{pageId === 'general' ? '活动运营看板' : '专业实践看板'}</strong><p>{pageId === 'general' ? '统一配置与跟踪活动全流程' : '支持按岗位配置与追踪实践活动'}</p></div>
-        </aside>
+        <ActivitySidebar
+          activePage={pageId}
+          onPageChange={onPageChange}
+          illustration={{
+            src: activityImages.operations,
+            alt: '活动运营看板插画',
+            title: pageId === 'general' ? '活动运营看板' : '专业实践看板',
+            description: pageId === 'general' ? '统一配置与跟踪活动全流程' : '支持按岗位配置与追踪实践活动',
+          }}
+        />
 
         <section className="activity-content">
           <div className="activity-filters" aria-label="活动筛选条件">

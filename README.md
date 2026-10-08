@@ -93,13 +93,21 @@ npm run test
 ```text
 src/
 ├─ components/   # 可复用的页面组件
+│  ├─ activity/  # 活动配置中心公共布局
+│  ├─ home/      # 首页模块预览
+│  └─ points/    # 星愿值中心布局与业务模块
 ├─ constants/    # 导航、资源等固定配置
 ├─ mocks/        # 当前原型使用的演示数据
 ├─ pages/        # 页面级布局和交互状态
 ├─ services/     # 认证、任务、活动和星愿值数据访问边界
 ├─ types/        # TypeScript 领域类型
 ├─ App.tsx       # 应用入口和轻量 hash 路由
-└─ styles.css    # 全局样式
+├─ styles.css    # 全局基础和登录页样式
+└─ styles/       # 按业务页面拆分的样式
+   ├─ home.css
+   ├─ tasks.css
+   ├─ activity.css
+   └─ points.css
 ```
 
 各业务页面通过 `services/` 访问数据，当前 service 实现仍返回 mock 数据，并使用浏览器存储模拟活动草稿。接入后端时，只需替换 service 内部的接口实现，页面组件继续负责展示和交互编排。

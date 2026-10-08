@@ -60,9 +60,6 @@ function App() {
         : <ActivityOverviewPage
           pageId={currentRoute.pageId}
           onPageChange={navigateToActivityPage}
-          onOpenPublish={() => navigateToActivityPage('publish')}
-          onOpenReview={() => navigateToActivityPage('review')}
-          onOpenProfessionalReview={() => navigateToActivityPage('review-professional')}
           onHome={navigateHome}
         />
   }

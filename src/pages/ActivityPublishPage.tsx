@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { activityConfigIcons, activityImages, profileAvatars, statIcons } from '../constants/assets'
+import { ActivityHeader, ActivitySidebar } from '../components/activity'
+import { activityConfigIcons, activityImages, statIcons } from '../constants/assets'
 import { activityService } from '../services/activityService'
 import type { ActivityItem, ActivityPageId } from '../types/activity'
 
@@ -125,37 +126,20 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
 
   return (
     <main className="activity-builder-page">
-      <header className="activity-header">
-        <button className="activity-brand" type="button" onClick={onHome} aria-label="返回梦工场首页">
-          <img className="activity-brand__icon" src={activityConfigIcons.publish} alt="" aria-hidden="true" />
-        </button>
-        <div className="activity-heading">
-          <p className="activity-crumb">梦工场 <span>›</span> 活动配置中心 <span>›</span> 活动发布</p>
-          <h1>活动发布 <i>✦</i></h1>
-          <p>创建并配置实习生活动内容</p>
-        </div>
-        <aside className="activity-user-card" aria-label="当前登录用户">
-          <div className="activity-user-card__avatar" aria-hidden="true"><img src={profileAvatars.activityManager} alt="" /></div>
-          <div><strong>阳洁</strong><small>活动配置中心</small></div>
-        </aside>
-      </header>
+      <ActivityHeader icon={activityConfigIcons.publish} title="活动发布" subtitle="创建并配置实习生活动内容" crumb="活动发布" onHome={onHome} />
 
       <section className="activity-builder-layout">
-        <aside className="activity-sidebar activity-builder-sidebar">
-          <h2>功能模块</h2>
-          <nav aria-label="活动配置功能导航">
-            <button type="button" onClick={() => onPageChange('general')}><img className="activity-nav-icon" src={activityConfigIcons.general} alt="" aria-hidden="true" />通用活动总览<i>›</i></button>
-            <button type="button" onClick={() => onPageChange('professional')}><img className="activity-nav-icon" src={activityConfigIcons.professional} alt="" aria-hidden="true" />专业活动总览<i>›</i></button>
-            <button className="is-selected" type="button" onClick={() => onPageChange('publish')}><img className="activity-nav-icon" src={activityConfigIcons.publish} alt="" aria-hidden="true" />活动发布<i>›</i></button>
-          <button type="button" onClick={() => onPageChange('review')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />通用活动复盘<i>›</i></button>
-          <button type="button" onClick={() => onPageChange('review-professional')}><img className="activity-nav-icon" src={activityConfigIcons.review} alt="" aria-hidden="true" />专业活动复盘<i>›</i></button>
-          </nav>
-          <div className="activity-sidebar__illustration">
-            <img src={activityConfigIcons.publish} alt="活动发布插画" />
-            <strong>活动发布模板</strong>
-            <p>快速创建标准化活动，支持自定义内容与规则配置</p>
-          </div>
-        </aside>
+        <ActivitySidebar
+          activePage="publish"
+          onPageChange={onPageChange}
+          className="activity-builder-sidebar"
+          illustration={{
+            src: activityConfigIcons.publish,
+            alt: '活动发布插画',
+            title: '活动发布模板',
+            description: '快速创建标准化活动，支持自定义内容与规则配置',
+          }}
+        />
 
         <section className="activity-builder-content">
           <div className="builder-card">
