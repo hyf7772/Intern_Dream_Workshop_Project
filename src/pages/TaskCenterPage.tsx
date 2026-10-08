@@ -25,21 +25,25 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
   const [submitTask, setSubmitTask] = useState<TaskItem | null>(null)
   const [busyTaskId, setBusyTaskId] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
+  const [error, setError] = useState('')
 
   useEffect(() => {
     let active = true
     setPage(null)
-    Promise.all([taskService.getTaskPages(), taskService.getUserSummary()]).then(([pageData, userData]) => {
-      if (active) {
-        setPages(pageData)
-        setPage(pageData[pageId])
-        setUser(userData)
-        setTaskStatuses(current => ({
-          ...Object.fromEntries(Object.values(pageData).flatMap(taskPage => taskPage.sections.flatMap(section => section.tasks.map(task => [task.id, task.status] as const)))),
-          ...current,
-        }))
-      }
-    })
+    setError('')
+    Promise.all([taskService.getTaskPages(), taskService.getUserSummary()])
+      .then(([pageData, userData]) => {
+        if (active) {
+          setPages(pageData)
+          setPage(pageData[pageId])
+          setUser(userData)
+          setTaskStatuses(current => ({
+            ...Object.fromEntries(Object.values(pageData).flatMap(taskPage => taskPage.sections.flatMap(section => section.tasks.map(task => [task.id, task.status] as const)))),
+            ...current,
+          }))
+        }
+      })
+      .catch(() => { if (active) setError('任务数据加载失败，请稍后重试') })
     return () => { active = false }
   }, [pageId])
 
@@ -61,6 +65,8 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
       const result = await taskService.enrollTask(task.id)
       setTaskStatuses(current => ({ ...current, [result.taskId]: result.status }))
       setNotice(`已报名“${task.title}”，请按要求完成并提交材料`)
+    } catch {
+      setNotice(`“${task.title}”报名失败，请稍后重试`)
     } finally {
       setBusyTaskId(null)
     }
@@ -79,6 +85,8 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
       setTaskStatuses(current => ({ ...current, [result.taskId]: result.status }))
       setNotice(`“${submitTask.title}”材料已提交，任务已完成`)
       setSubmitTask(null)
+    } catch {
+      setNotice(`“${submitTask.title}”提交失败，请稍后重试`)
     } finally {
       setBusyTaskId(null)
     }
@@ -90,6 +98,7 @@ export function TaskCenterPage({ pageId, onPageChange, onHome }: TaskCenterPageP
     else setNotice(`${label}模块将在后续阶段接入`)
   }
 
+  if (error) return <main className={`task-page task-page--${pageId}`}><div className="page-loading" role="alert">{error}</div></main>
   if (!page || !pages || !user) return <main className={`task-page task-page--${pageId}`}><div className="page-loading">正在载入任务数据…</div></main>
 
   const currentTasks = page.sections.flatMap(section => section.tasks)

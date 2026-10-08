@@ -66,7 +66,7 @@ npm run test:run
 npm run test
 ```
 
-当前测试覆盖路由解析与角色权限、活动草稿和发布、星愿值数据操作，以及登录后的关键页面入口。
+当前测试覆盖路由解析与角色权限、任务中心报名/材料提交/专业任务入口、活动草稿和发布、星愿值数据操作，以及接口服务的后端路径映射。
 
 ## 当前功能范围
 
@@ -100,6 +100,8 @@ src/
 ├─ mocks/        # 当前原型使用的演示数据
 ├─ pages/        # 页面级布局和交互状态
 ├─ services/     # 认证、任务、活动和星愿值数据访问边界
+│  ├─ apiClient.ts       # 可替换的 HTTP 请求边界
+│  └─ taskService.ts     # mock 与 HTTP 任务服务实现
 ├─ types/        # TypeScript 领域类型
 ├─ App.tsx       # 应用入口和轻量 hash 路由
 ├─ styles.css    # 全局基础和登录页样式
@@ -111,6 +113,8 @@ src/
 ```
 
 各业务页面通过 `services/` 访问数据，当前 service 实现仍返回 mock 数据，并使用浏览器存储模拟活动草稿。接入后端时，只需替换 service 内部的接口实现，页面组件继续负责展示和交互编排。
+
+任务服务已提供 `createHttpTaskService` 和统一 `apiClient`，后端接入时配置 `VITE_API_BASE_URL` 即可自动切换为 HTTP 实现；未配置时继续使用 mock，便于本地演示和测试。
 
 ## 部署
 
