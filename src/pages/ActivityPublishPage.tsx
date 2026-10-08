@@ -67,6 +67,7 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
   const [showGroups, setShowGroups] = useState(false)
   const [showPoster, setShowPoster] = useState(false)
   const [notice, setNotice] = useState('')
+  const [saving, setSaving] = useState(false)
 
   const groups = useMemo(() => groupMode === 'smart' ? smartGroups : manualGroups, [groupMode])
   const totalPeople = groups.reduce((total, group) => total + group.count, 0)
@@ -105,7 +106,8 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
     event.target.value = ''
   }
 
-  const saveDraft = () => {
+  const saveDraft = async () => {
+    if (saving) return
     if (!form.name.trim() || !form.startDate || !form.endDate || !form.content.trim() || !requirementsText.trim()) {
       setNotice('请先完善活动名称、活动时间、活动内容和活动要求')
       return
@@ -117,11 +119,18 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
       stars: Number(form.stars) || 0, status: '草稿', icon: form.icon, positionType: form.type === '专业任务' && form.positionType ? form.positionType : undefined,
       participants: form.participants, content: form.content.trim(), requirements: [requirementsText.trim()], attachments: attachments.map(item => item.name), overview: form.type === '专业任务' ? 'professional' : 'general',
     }
-    activityService.saveDraft(draft)
-    setNotice('活动草稿保存成功')
-    setForm(initialForm)
-    setRequirementsText('')
-    setAttachments([])
+    setSaving(true)
+    try {
+      await activityService.saveDraft(draft)
+      setNotice('活动草稿保存成功')
+      setForm(initialForm)
+      setRequirementsText('')
+      setAttachments([])
+    } catch {
+      setNotice('活动草稿保存失败，请稍后重试')
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (
@@ -187,7 +196,7 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
             </div>
           </div>
 
-          <footer className="builder-footer-actions"><button className="builder-button is-primary" type="button" onClick={saveDraft}>保存为草稿</button></footer>
+          <footer className="builder-footer-actions"><button className="builder-button is-primary" type="button" disabled={saving} onClick={() => void saveDraft()}>{saving ? '保存中…' : '保存为草稿'}</button></footer>
         </section>
       </section>
 

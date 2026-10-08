@@ -3,7 +3,7 @@ import { ActivityDetailModal } from '../components/ActivityDetailModal'
 import { ActivityHeader, ActivitySidebar } from '../components/activity'
 import { activityConfigIcons, activityImages, statIcons } from '../constants/assets'
 import { activityService } from '../services/activityService'
-import type { ActivityItem, ActivityOverviewId, ActivityPageId, ActivityStatus } from '../types/activity'
+import type { ActivityItem, ActivityOverviewConfig, ActivityOverviewId, ActivityPageId, ActivityStatus } from '../types/activity'
 
 interface ActivityOverviewPageProps {
   pageId: ActivityOverviewId
@@ -26,8 +26,10 @@ function ActivityDateField({ value, onChange, ariaLabel }: { value: string; onCh
 }
 
 export function ActivityOverviewPage({ pageId, onPageChange, onHome }: ActivityOverviewPageProps) {
-  const config = activityService.getOverview(pageId)
-  const [items, setItems] = useState<ActivityItem[]>(() => activityService.getOverviewItems(pageId))
+  const [config, setConfig] = useState<ActivityOverviewConfig | null>(null)
+  const [items, setItems] = useState<ActivityItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [status, setStatus] = useState<ActivityStatus | ''>('')
   const [positionType, setPositionType] = useState('')
   const [startDate, setStartDate] = useState('')
@@ -36,9 +38,32 @@ export function ActivityOverviewPage({ pageId, onPageChange, onHome }: ActivityO
   const [page, setPage] = useState(1)
   const [notice, setNotice] = useState('')
   const [detail, setDetail] = useState<{ activity: ActivityItem; editing: boolean } | null>(null)
+  const [busyActivityId, setBusyActivityId] = useState<string | null>(null)
   const pageSize = 5
 
-  useEffect(() => { setItems(activityService.getOverviewItems(pageId)); setStatus(''); setPositionType(''); setStartDate(''); setEndDate(''); setQuery(''); setPage(1) }, [pageId])
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    setError('')
+    setStatus('')
+    setPositionType('')
+    setStartDate('')
+    setEndDate('')
+    setQuery('')
+    setPage(1)
+    setDetail(null)
+
+    Promise.all([activityService.getOverview(pageId), activityService.getOverviewItems(pageId)])
+      .then(([nextConfig, nextItems]) => {
+        if (!active) return
+        setConfig(nextConfig)
+        setItems(nextItems)
+      })
+      .catch(() => { if (active) setError('活动数据加载失败，请稍后重试') })
+      .finally(() => { if (active) setLoading(false) })
+
+    return () => { active = false }
+  }, [pageId])
   const stats = [
     { label: '活动总数', value: items.length, icon: activityConfigIcons.stats.weekly },
     { label: '活动完成数', value: items.filter(item => item.status === '已复盘').length, icon: activityConfigIcons.stats.completed },
@@ -65,8 +90,37 @@ export function ActivityOverviewPage({ pageId, onPageChange, onHome }: ActivityO
     return () => window.clearTimeout(timeout)
   }, [notice])
 
-  const saveActivity = (activity: ActivityItem) => { const saved = activityService.updateActivity(activity); setItems(previous => previous.map(item => item.id === saved.id ? saved : item)); setDetail(null); setNotice(`“${activity.name}”内容已保存，当前状态为草稿`) }
-  const publishActivity = (activity: ActivityItem) => { if (activity.status === '草稿') { const published = activityService.publishActivity(activity); setItems(previous => previous.map(item => item.id === published.id ? published : item)); setNotice(`“${activity.name}”已发布`) } }
+  const saveActivity = async (activity: ActivityItem) => {
+    setBusyActivityId(activity.id)
+    try {
+      const saved = await activityService.updateActivity(activity)
+      setItems(previous => previous.map(item => item.id === saved.id ? saved : item))
+      setDetail(null)
+      setNotice(`“${activity.name}”内容已保存，当前状态为草稿`)
+    } catch {
+      setNotice(`“${activity.name}”保存失败，请稍后重试`)
+    } finally {
+      setBusyActivityId(null)
+    }
+  }
+
+  const publishActivity = async (activity: ActivityItem) => {
+    if (activity.status !== '草稿') return
+    setBusyActivityId(activity.id)
+    try {
+      const published = await activityService.publishActivity(activity)
+      setItems(previous => previous.map(item => item.id === published.id ? published : item))
+      setNotice(`“${activity.name}”已发布`)
+    } catch {
+      setNotice(`“${activity.name}”发布失败，请稍后重试`)
+    } finally {
+      setBusyActivityId(null)
+    }
+  }
+
+  if (loading || !config) {
+    return <main className="activity-page"><div className="page-loading" role={error ? 'alert' : undefined}>{error || '正在载入活动数据…'}</div></main>
+  }
 
   return (
     <main className="activity-page">
@@ -108,7 +162,7 @@ export function ActivityOverviewPage({ pageId, onPageChange, onHome }: ActivityO
                     <td>{item.location}</td>
                     <td><img className="activity-stars" src={statIcons.stars} alt="" aria-hidden="true" /> {item.stars}</td>
                     <td><span className={`activity-status ${statusClass[item.status]}`}>{item.status}</span></td>
-                    <td><div className="activity-row-actions"><button type="button" className="activity-row-action is-secondary" onClick={() => setDetail({ activity: item, editing: false })}>查看</button><button type="button" className="activity-row-action is-secondary" onClick={() => setDetail({ activity: item, editing: true })}>编辑</button><button type="button" className="activity-row-action is-primary" disabled={item.status !== '草稿'} onClick={() => publishActivity(item)}>发布</button></div></td>
+                    <td><div className="activity-row-actions"><button type="button" className="activity-row-action is-secondary" onClick={() => setDetail({ activity: item, editing: false })}>查看</button><button type="button" className="activity-row-action is-secondary" onClick={() => setDetail({ activity: item, editing: true })}>编辑</button><button type="button" className="activity-row-action is-primary" disabled={item.status !== '草稿' || busyActivityId === item.id} onClick={() => void publishActivity(item)}>{busyActivityId === item.id ? '处理中' : '发布'}</button></div></td>
                   </tr>)}
                   {!visibleItems.length && <tr><td className="activity-table__empty" colSpan={6}>没有匹配的活动，请调整筛选条件</td></tr>}
                 </tbody>

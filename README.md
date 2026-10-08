@@ -101,11 +101,11 @@ src/
 - `authService.ts`：模拟身份登录、`sessionStorage` 会话恢复和退出。
 - `apiClient.ts`：统一 HTTP 请求地址、JSON 请求头、网络错误和 HTTP 错误。
 - `taskService.ts`：任务页面、用户摘要、首页模块、报名和材料提交；支持 mock 与 HTTP 两种实现。
-- `activityService.ts`：活动总览、草稿保存、活动发布和复盘数据；当前使用 mock 与 `localStorage`。
+- `activityService.ts`：活动总览、草稿保存、活动发布和复盘数据；支持 mock 与 HTTP 两种实现。
 - `pointsService.ts`：排名、礼品、兑换记录和发放状态；当前使用 mock 与页面内存状态。
 - `storageService.ts`：对浏览器 `localStorage` 的安全读写封装。
 
-配置 `VITE_API_BASE_URL` 后，任务服务自动使用 HTTP 实现；未配置时继续使用本地 mock：
+配置 `VITE_API_BASE_URL` 后，任务和活动服务自动使用 HTTP 实现；未配置时继续使用本地 mock：
 
 ```bash
 # .env.local
@@ -136,7 +136,7 @@ posters/       活动海报
 - TypeScript 使用严格模式和项目引用配置。
 - ESLint 使用 flat config，覆盖 TypeScript、React Hooks 和 React Refresh 规则。
 - 测试环境使用 Vitest、jsdom 和 Testing Library。
-- 当前共有 6 个测试文件、18 个测试用例，覆盖路由权限、应用入口、任务交互、任务服务、活动服务和星愿值服务。
+- 当前共有 6 个测试文件、19 个测试用例，覆盖路由权限、应用入口、任务交互、任务服务、活动服务和星愿值服务。
 - GitHub Actions 在部署前执行 `npm ci`、`npm run lint`、`npm run test:run` 和 `npm run build`。
 
 当前测试重点是核心业务路径，活动页面和星愿值页面的完整组件交互测试还没有覆盖。
@@ -148,7 +148,7 @@ posters/       活动海报
 ## 当前边界
 
 - 登录、权限和业务数据仍是前端演示实现，不构成真实身份认证和服务端授权。
-- 活动草稿使用 `localStorage`，任务状态、礼品和兑换状态主要保存在页面内存中，刷新后不会完整恢复。
-- 活动和星愿值 service 目前是同步 mock 接口，任务 service 已提供异步 HTTP 替换点，服务层的异步规范尚未完全统一。
+- mock 模式下活动草稿使用 `localStorage`，任务状态、礼品和兑换状态主要保存在页面内存中，刷新后不会完整恢复。
+- 任务和活动 service 已提供异步 HTTP 替换点，星愿值 service 仍是同步 mock，服务层的异步规范尚未完全统一。
 - 页面样式已经按业务拆分，但 `tasks.css`、`activity.css` 和 `home.css` 仍然较大，后续可继续按组件或布局区域细分。
 - 当前未引入 React Router、全局状态库或通用 UI 组件库，项目规模仍适合使用现有轻量结构。

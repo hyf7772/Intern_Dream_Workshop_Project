@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { ActivityHeader, ActivitySidebar } from '../components/activity'
 import { activityConfigIcons, activityImages, statIcons } from '../constants/assets'
 import { activityService } from '../services/activityService'
-import type { ActivityPageId, ReviewActivity } from '../types/activity'
+import type { ActivityPageId, ReviewActivity, SubmittedMember } from '../types/activity'
 
 interface ActivityReviewPageProps {
   mode: 'general' | 'professional'
@@ -10,9 +10,6 @@ interface ActivityReviewPageProps {
   onPageChange: (pageId: ActivityPageId) => void
   onHome: () => void
 }
-
-const endedActivities = activityService.getReviewActivities()
-const submittedMembers = activityService.getSubmittedMembers()
 
 const fileType: Record<string, string> = { xlsx: 'XLS', pdf: 'PDF', zip: 'ZIP' }
 const reviewStatIcons = {
@@ -29,21 +26,43 @@ function ActivityDateField({ value, onChange, ariaLabel }: { value: string; onCh
 }
 
 export function ActivityReviewPage({ mode, onModeChange, onPageChange, onHome }: ActivityReviewPageProps) {
+  const [endedActivities, setEndedActivities] = useState<ReviewActivity[]>([])
+  const [submittedMembers, setSubmittedMembers] = useState<SubmittedMember[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<'待复盘' | '已复盘' | ''>('')
   const [positionType, setPositionType] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [selectedId, setSelectedId] = useState(endedActivities[0].id)
+  const [selectedId, setSelectedId] = useState('')
   const [notice, setNotice] = useState('')
-  const [publishedIds, setPublishedIds] = useState<string[]>(endedActivities.filter(activity => activity.points > 0).map(activity => activity.id))
+  const [publishedIds, setPublishedIds] = useState<string[]>([])
   const [detailOpen, setDetailOpen] = useState(false)
   const [pointsOpen, setPointsOpen] = useState(false)
   const [pointsMode, setPointsMode] = useState<'batch' | 'custom'>('batch')
   const [pointValue, setPointValue] = useState('')
   const [customPoints, setCustomPoints] = useState<Record<string, string>>({})
+  const [publishingPoints, setPublishingPoints] = useState(false)
 
-  const activities = useMemo(() => endedActivities.filter(activity => mode === 'general' || Boolean(activity.positionType)), [mode])
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    setError('')
+    Promise.all([activityService.getReviewActivities(), activityService.getSubmittedMembers()])
+      .then(([activities, members]) => {
+        if (!active) return
+        setEndedActivities(activities)
+        setSubmittedMembers(members)
+        setSelectedId(activities[0]?.id ?? '')
+        setPublishedIds(activities.filter(activity => activity.points > 0).map(activity => activity.id))
+      })
+      .catch(() => { if (active) setError('复盘数据加载失败，请稍后重试') })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [])
+
+  const activities = useMemo(() => endedActivities.filter(activity => mode === 'general' || Boolean(activity.positionType)), [endedActivities, mode])
   const filteredActivities = useMemo(() => activities.filter(activity => {
     const normalizedQuery = query.trim().toLowerCase()
     const normalizedStatus = activity.reviewStatus === '已结束' ? '已复盘' : activity.reviewStatus
@@ -62,10 +81,27 @@ export function ActivityReviewPage({ mode, onModeChange, onPageChange, onHome }:
     return () => window.clearTimeout(timeout)
   }, [notice])
 
-  const publishPoints = (activity: ReviewActivity) => {
-    setPublishedIds(previous => previous.includes(activity.id) ? previous : [...previous, activity.id])
-    setNotice(`已为“${activity.name}”发布 ${activity.submitted * activity.average} 星愿值`)
+  const publishPoints = async (activity: ReviewActivity) => {
+    if (publishingPoints) return
+    setPublishingPoints(true)
+    try {
+      const allocation = pointsMode === 'batch'
+        ? { mode: 'batch' as const, pointValue: Number(pointValue || activity.average) }
+        : { mode: 'custom' as const, customPoints: Object.fromEntries(submittedMembers.map(member => [member.name, Number(customPoints[member.name] ?? activity.average) || 0])) }
+      const result = await activityService.publishReviewPoints(activity.id, allocation)
+      setPublishedIds(previous => previous.includes(activity.id) ? previous : [...previous, activity.id])
+      setNotice(`已为“${activity.name}”发布 ${result.totalPoints} 星愿值`)
+      setPointsOpen(false)
+    } catch {
+      setNotice(`“${activity.name}”积分发放失败，请稍后重试`)
+    } finally {
+      setPublishingPoints(false)
+    }
   }
+
+  if (loading) return <main className="activity-review-page"><div className="page-loading">正在载入复盘数据…</div></main>
+  if (error) return <main className="activity-review-page"><div className="page-loading" role="alert">{error}</div></main>
+  if (!selected) return <main className="activity-review-page"><div className="page-loading">暂无可复盘活动</div></main>
 
   return (
     <main className="activity-review-page">
@@ -113,14 +149,14 @@ export function ActivityReviewPage({ mode, onModeChange, onPageChange, onHome }:
               <header className="review-detail-heading"><div className="detail-title-row"><span className="review-detail-icon">{selected.icon}</span><div><h2>{selected.name}</h2><p>{selected.type} · {selected.publisher} / {selected.department}</p></div><span className={`review-status ${selected.reviewStatus === '待复盘' ? 'is-pending' : 'is-done'}`}>{selected.reviewStatus}</span></div><div className="detail-meta"><span>时间：{selected.date} {selected.time}</span><span>地点：{selected.location}</span></div></header>
               <section className="detail-result-overview"><h3>活动结果概览</h3><div className="detail-metrics"><div><span>✔️</span><small>活动完成率</small><strong>92%</strong></div><div><span>🤵</span><small>参与人数</small><strong>{selected.submitted}/{selected.participants}</strong></div><div><span>💻</span><small>已提交反馈</small><strong>{selected.submitted}</strong></div><div><span className="metric-icon is-star"><img src={statIcons.stars} alt="" aria-hidden="true" /></span><small>平均星愿值</small><strong>{selected.average}</strong></div></div></section>
               <section className="detail-submissions"><div className="detail-section-title"><h3>实习生提交内容 <em>部分</em></h3><button type="button" onClick={() => setNotice(`已加载“${selected.name}”全部提交内容`)}>查看全部 ›</button></div><div className="submission-list">{submittedMembers.slice(0, 3).map(member => <div className="submission-row" key={member.name}><span className={`submission-avatar is-${member.tone}`}>{member.initials}</span><strong>{member.name}</strong><div className="submission-tags">{member.tags.map(tag => <span key={tag}>{tag}</span>)}</div><time>{member.time}</time></div>)}</div></section>
-              <section className="detail-points"><div><h3>发布积分</h3><p>{publishedIds.includes(selected.id) ? '已完成发放，实习生可查看本次活动星愿值' : `已完成签到与反馈的实习生可发放${selected.average}星愿值`}</p></div><button className="review-points-button" type="button" onClick={() => publishPoints(selected)}>{publishedIds.includes(selected.id) ? '再次发布积分' : '批量发放积分'}</button></section>
+              <section className="detail-points"><div><h3>发布积分</h3><p>{publishedIds.includes(selected.id) ? '已完成发放，实习生可查看本次活动星愿值' : `已完成签到与反馈的实习生可发放${selected.average}星愿值`}</p></div><button className="review-points-button" type="button" disabled={publishingPoints} onClick={() => void publishPoints(selected)}>{publishingPoints ? '发放中…' : publishedIds.includes(selected.id) ? '再次发布积分' : '批量发放积分'}</button></section>
               <section className="detail-files"><h3>附件 / 成果查看</h3><div className="detail-file-list">{selected.files.slice(0, 3).map(file => <button type="button" className="detail-file" key={file} onClick={() => setNotice(`已打开附件“${file}”`)}><span className={`file-badge is-${file.split('.').pop()}`}>{fileType[file.split('.').pop() ?? 'pdf'] ?? 'FILE'}</span><strong>{file}</strong><i>↗</i></button>)}<button type="button" className="detail-file more-files" onClick={() => setNotice(`该活动共有 ${selected.files.length} 个附件`)}>更多 </button></div></section>
             </aside>
           </div>
         </section>
       </section>
       {detailOpen && <div className="activity-detail-backdrop" role="presentation" onMouseDown={event => { if (event.currentTarget === event.target) setDetailOpen(false) }}><section className="activity-detail-modal" role="dialog" aria-modal="true" aria-labelledby="review-detail-title"><button className="activity-detail-close" type="button" onClick={() => setDetailOpen(false)} aria-label="关闭">×</button><div className="activity-detail-heading"><span className="activity-detail-icon">{selected.icon}</span><div><p>活动复盘详情</p><h2 id="review-detail-title">{selected.name}</h2><span className={`activity-status ${publishedIds.includes(selected.id) ? 'is-reviewed' : 'is-pending-review'}`}>{publishedIds.includes(selected.id) ? '已复盘' : '待复盘'}</span></div></div><div className="activity-detail-content"><div className="activity-detail-summary"><span>发布人<strong>{selected.publisher}</strong></span><span>活动时间<strong>{selected.date} {selected.time}</strong></span><span>活动地点<strong>{selected.location}</strong></span><span>报名人数<strong>{selected.participants}</strong></span><span>上传材料人数<strong>{selected.submitted}</strong></span></div></div><footer className="activity-detail-actions"><button type="button" className="activity-detail-button is-secondary" onClick={() => setDetailOpen(false)}>关闭</button></footer></section></div>}
-      {pointsOpen && <div className="review-modal-backdrop" role="presentation" onMouseDown={event => { if (event.currentTarget === event.target) setPointsOpen(false) }}><section className="review-modal points-modal" role="dialog" aria-modal="true" aria-labelledby="points-modal-title"><button className="review-modal-close" type="button" onClick={() => setPointsOpen(false)} aria-label="关闭">×</button><h2 id="points-modal-title">发放积分 · {selected.name}</h2><div className="points-tabs"><button className={pointsMode === 'batch' ? 'is-active' : ''} type="button" onClick={() => setPointsMode('batch')}>批量发放</button><button className={pointsMode === 'custom' ? 'is-active' : ''} type="button" onClick={() => setPointsMode('custom')}>自定义发放</button></div>{pointsMode === 'batch' ? <label className="points-input"><span>本次发放星愿值</span><input type="number" min="0" value={pointValue || selected.average} onChange={event => setPointValue(event.target.value)} /><small>默认使用活动创建时的星愿值，可修改</small></label> : <div className="custom-points-list">{submittedMembers.map(member => <label key={member.name}><span>{member.name}</span><input type="number" min="0" value={customPoints[member.name] ?? String(selected.average)} onChange={event => setCustomPoints(previous => ({ ...previous, [member.name]: event.target.value }))} /></label>)}</div>}<footer className="review-modal-actions"><button type="button" className="builder-button is-outline" onClick={() => { setPointsOpen(false); setNotice('积分发放设置已暂存') }}>暂存</button><button type="button" className="builder-button is-primary" onClick={() => { publishPoints(selected); setPointsOpen(false) }}>发放</button></footer></section></div>}
+      {pointsOpen && <div className="review-modal-backdrop" role="presentation" onMouseDown={event => { if (event.currentTarget === event.target) setPointsOpen(false) }}><section className="review-modal points-modal" role="dialog" aria-modal="true" aria-labelledby="points-modal-title"><button className="review-modal-close" type="button" onClick={() => setPointsOpen(false)} aria-label="关闭">×</button><h2 id="points-modal-title">发放积分 · {selected.name}</h2><div className="points-tabs"><button className={pointsMode === 'batch' ? 'is-active' : ''} type="button" onClick={() => setPointsMode('batch')}>批量发放</button><button className={pointsMode === 'custom' ? 'is-active' : ''} type="button" onClick={() => setPointsMode('custom')}>自定义发放</button></div>{pointsMode === 'batch' ? <label className="points-input"><span>本次发放星愿值</span><input type="number" min="0" value={pointValue || selected.average} onChange={event => setPointValue(event.target.value)} /><small>默认使用活动创建时的星愿值，可修改</small></label> : <div className="custom-points-list">{submittedMembers.map(member => <label key={member.name}><span>{member.name}</span><input type="number" min="0" value={customPoints[member.name] ?? String(selected.average)} onChange={event => setCustomPoints(previous => ({ ...previous, [member.name]: event.target.value }))} /></label>)}</div>}<footer className="review-modal-actions"><button type="button" className="builder-button is-outline" onClick={() => { setPointsOpen(false); setNotice('积分发放设置已暂存') }}>暂存</button><button type="button" className="builder-button is-primary" disabled={publishingPoints} onClick={() => void publishPoints(selected)}>{publishingPoints ? '发放中…' : '发放'}</button></footer></section></div>}
       {notice && <div className="activity-toast" role="status">{notice}</div>}
     </main>
   )
