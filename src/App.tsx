@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ActivityOverviewPage } from './pages/ActivityOverviewPage'
 import { ActivityPublishPage } from './pages/ActivityPublishPage'
 import { ActivityReviewPage } from './pages/ActivityReviewPage'
@@ -7,57 +7,29 @@ import { HomePage } from './pages/HomePage'
 import { LoginPage } from './pages/LoginPage'
 import { TaskCenterPage } from './pages/TaskCenterPage'
 import { authService } from './services/authService'
+import { canAccessRoute } from './app/routes'
+import { useHashRoute } from './app/useHashRoute'
 import type { AuthUser, UserRole } from './types/auth'
 import type { ActivityPageId } from './types/activity'
 import type { PointsPageId } from './types/points'
 import type { TaskPageId } from './types/task'
 
-const isTaskPageId = (value: string): value is TaskPageId => ['newcomer', 'mainline', 'professional'].includes(value)
-const isActivityPageId = (value: string): value is ActivityPageId => ['general', 'professional', 'publish', 'review', 'review-professional'].includes(value)
-const isPointsPageId = (value: string): value is PointsPageId => ['ranking', 'gifts', 'redemptions'].includes(value)
-const readTaskPageFromHash = (): TaskPageId | null => {
-  const value = window.location.hash.replace('#/tasks/', '')
-  return isTaskPageId(value) ? value : null
-}
-const readActivityPageFromHash = (): ActivityPageId | null => {
-  const value = window.location.hash.replace('#/activities/', '')
-  return isActivityPageId(value) ? value : null
-}
-const readPointsPageFromHash = (): PointsPageId | null => {
-  const value = window.location.hash.replace('#/points/', '')
-  return isPointsPageId(value) ? value : null
-}
-
 function App() {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => authService.restoreSession())
-  const [taskPage, setTaskPage] = useState<TaskPageId | null>(() => readTaskPageFromHash())
-  const [activityPage, setActivityPage] = useState<ActivityPageId | null>(() => readActivityPageFromHash())
-  const [activityReviewMode, setActivityReviewMode] = useState<'general' | 'professional'>(() => window.location.hash.endsWith('review-professional') ? 'professional' : 'general')
-  const [pointsPage, setPointsPage] = useState<PointsPageId | null>(() => readPointsPageFromHash())
+  const { route, navigate } = useHashRoute()
+  const currentRoute = currentUser && canAccessRoute(route, currentUser.role) ? route : { kind: 'home' as const }
 
-  useEffect(() => {
-    const handleHashChange = () => {
-      setTaskPage(readTaskPageFromHash())
-      setActivityPage(readActivityPageFromHash())
-      setActivityReviewMode(window.location.hash.endsWith('review-professional') ? 'professional' : 'general')
-      setPointsPage(readPointsPageFromHash())
-    }
-    window.addEventListener('hashchange', handleHashChange)
-    return () => window.removeEventListener('hashchange', handleHashChange)
-  }, [])
+  const navigateToTaskPage = (pageId: TaskPageId) => navigate({ kind: 'tasks', pageId })
+  const navigateToActivityPage = (pageId: ActivityPageId) => navigate({ kind: 'activities', pageId })
+  const navigateToPointsPage = (pageId: PointsPageId) => navigate({ kind: 'points', pageId })
+  const navigateHome = () => navigate({ kind: 'home' })
 
-  const navigateToTaskPage = (page: TaskPageId) => { window.location.hash = `/tasks/${page}`; setTaskPage(page) }
-  const navigateToActivityPage = (page: ActivityPageId) => { window.location.hash = `/activities/${page}`; setActivityPage(page) }
-  const navigateToPointsPage = (page: PointsPageId) => { window.location.hash = `/points/${page}`; setPointsPage(page) }
-  const navigateHome = () => { window.history.pushState(null, '', window.location.pathname); setTaskPage(null); setActivityPage(null); setPointsPage(null) }
   const navigateToRoleSelection = () => {
     authService.clearSession()
-    window.history.pushState(null, '', window.location.pathname)
+    navigateHome()
     setCurrentUser(null)
-    setTaskPage(null)
-    setActivityPage(null)
-    setPointsPage(null)
   }
+
   const selectRole = async (role: UserRole): Promise<'entered' | 'unavailable'> => {
     const user = await authService.signInAsRole(role)
     authService.saveSession(user)
@@ -69,20 +41,25 @@ function App() {
     return <LoginPage onSelectRole={selectRole} />
   }
 
-  let pageContent = taskPage
-    ? <TaskCenterPage pageId={taskPage} onPageChange={navigateToTaskPage} onHome={navigateHome} />
+  let pageContent = currentRoute.kind === 'tasks'
+    ? <TaskCenterPage pageId={currentRoute.pageId} onPageChange={navigateToTaskPage} onHome={navigateHome} />
     : <HomePage role={currentUser.role} onOpenTasks={() => navigateToTaskPage('newcomer')} onOpenActivities={() => navigateToActivityPage('general')} onOpenPoints={() => navigateToPointsPage('ranking')} onReturnRoleSelection={navigateToRoleSelection} />
 
-  if (currentUser.role === 'admin' && pointsPage) {
-    pageContent = <PointsPage pageId={pointsPage} onPageChange={navigateToPointsPage} onHome={navigateHome} />
-  } else if (currentUser.role === 'admin' && activityPage) {
-    pageContent = activityPage === 'publish'
+  if (currentRoute.kind === 'points') {
+    pageContent = <PointsPage pageId={currentRoute.pageId} onPageChange={navigateToPointsPage} onHome={navigateHome} />
+  } else if (currentRoute.kind === 'activities') {
+    pageContent = currentRoute.pageId === 'publish'
       ? <ActivityPublishPage onPageChange={navigateToActivityPage} onHome={navigateHome} />
-      : (activityPage === 'review' || activityPage === 'review-professional')
-        ? <ActivityReviewPage mode={activityReviewMode} onModeChange={setActivityReviewMode} onPageChange={navigateToActivityPage} onHome={navigateHome} />
+      : (currentRoute.pageId === 'review' || currentRoute.pageId === 'review-professional')
+        ? <ActivityReviewPage
+          mode={currentRoute.pageId === 'review-professional' ? 'professional' : 'general'}
+          onModeChange={mode => navigateToActivityPage(mode === 'professional' ? 'review-professional' : 'review')}
+          onPageChange={navigateToActivityPage}
+          onHome={navigateHome}
+        />
         : <ActivityOverviewPage
-          pageId={activityPage}
-          onPageChange={page => navigateToActivityPage(page)}
+          pageId={currentRoute.pageId}
+          onPageChange={navigateToActivityPage}
           onOpenPublish={() => navigateToActivityPage('publish')}
           onOpenReview={() => navigateToActivityPage('review')}
           onOpenProfessionalReview={() => navigateToActivityPage('review-professional')}

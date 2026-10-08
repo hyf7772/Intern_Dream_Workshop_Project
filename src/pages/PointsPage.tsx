@@ -98,7 +98,7 @@ function RankingModule({ onNotice }: { onNotice: (message: string) => void }) {
     .filter(member => (department === '全部部门' || member.department === department)
       && (position === '全部岗位' || member.position === position)
       && (!query.trim() || member.name.includes(query.trim())))
-    .sort((a, b) => getPeriodScore(b, period) - getPeriodScore(a, period)), [department, position, query, period])
+    .sort((a, b) => getPeriodScore(b, period) - getPeriodScore(a, period)), [department, position, query, period, rankingMembers])
   const topThree = filtered.slice(0, 3)
   const remaining = filtered.slice(3, 10)
   const scoreLabel = period === 'week' ? '本周新增' : period === 'month' ? '本期新增' : '近三个月新增'

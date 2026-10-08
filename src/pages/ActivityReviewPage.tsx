@@ -53,7 +53,6 @@ export function ActivityReviewPage({ mode, onModeChange, onPageChange, onHome }:
       && (!normalizedQuery || activity.name.toLowerCase().includes(normalizedQuery))
   }), [activities, query, status, positionType, startDate, endDate])
   const selected = filteredActivities.find(activity => activity.id === selectedId) ?? filteredActivities[0] ?? endedActivities[0]
-  const pendingPoints = activities.filter(activity => !publishedIds.includes(activity.id)).reduce((total, activity) => total + activity.submitted * activity.average, 0)
   const stats = { ended: activities.filter(activity => publishedIds.includes(activity.id)).length, pending: activities.filter(activity => !publishedIds.includes(activity.id)).length, all: activities.length }
 
   useEffect(() => {

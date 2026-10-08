@@ -123,10 +123,6 @@ export function ActivityPublishPage({ onPageChange, onHome }: ActivityPublishPag
     setAttachments([])
   }
 
-  const generatePoster = () => setShowPoster(true)
-
-  const publishActivity = () => undefined
-
   return (
     <main className="activity-builder-page">
       <header className="activity-header">

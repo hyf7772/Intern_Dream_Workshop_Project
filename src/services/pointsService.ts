@@ -3,6 +3,7 @@ import type { GiftItem, RankingMember, RedemptionRecord } from '../types/points'
 
 const clone = <T,>(value: T): T => structuredClone(value)
 type GiftInput = Pick<GiftItem, 'name' | 'points' | 'stock' | 'category' | 'status'>
+const createGiftId = () => `g-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 
 export const pointsService = {
   // 当前返回 mock；接入后端时替换为星愿值接口。
@@ -19,7 +20,7 @@ export const pointsService = {
   },
 
   createGift(input: GiftInput): GiftItem {
-    return clone({ ...input, id: `g-${Date.now()}` })
+    return clone({ ...input, id: createGiftId() })
   },
 
   updateGift(gift: GiftItem, input: GiftInput): GiftItem {
